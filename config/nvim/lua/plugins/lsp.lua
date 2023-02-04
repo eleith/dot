@@ -20,6 +20,8 @@ return {
 			{ "│", "FloatBorder" },
 		}
 
+		vim.diagnostic.config({ virtual_text = false, float = { border = border } })
+
 		-- LSP settings (for overriding per client)
 		local handlers = {
 			["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border }),
