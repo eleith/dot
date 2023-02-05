@@ -4,12 +4,21 @@ set fish_greeting ""
 set -x EDITOR nvim
 set -x VISUAL nvim
 
-# make binaries available in $PATH
-set PATH "$HOME/.local/bin" $PATH
-set PATH "$HOME/shelf/go/bin" $PATH
-set PATH "$HOME/.cargo/bin" $PATH
-set PATH "$HOME/.local/share/gem/ruby/3.1.0/bin" $PATH
-set -gx GOPATH "$HOME/shelf/go"
+# add local binaries to path
+if test -f "$HOME/.local/bin"
+    set PATH "$HOME/.local/bin" $PATH
+end
+
+# add go binaries to path
+if test -f "$HOME/.go"
+    set -gx GOPATH "$HOME/.go"
+    set PATH "$HOME/.go/bin" $PATH
+end
+
+# add rust binaries to path
+if test -f "$HOME/.cargo/bin"
+    set PATH "$HOME/.cargo/bin" $PATH
+end
 
 # customize fzf to hide preview and make it toggle
 set -gx FZF_DEFAULT_OPTS "
