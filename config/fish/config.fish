@@ -5,18 +5,18 @@ set -x EDITOR nvim
 set -x VISUAL nvim
 
 # add local binaries to path
-if test -f "$HOME/.local/bin"
+if test -d ~/.local/bin
     set PATH "$HOME/.local/bin" $PATH
 end
 
 # add go binaries to path
-if test -f "$HOME/.go"
+if test -d ~/.go
     set -gx GOPATH "$HOME/.go"
     set PATH "$HOME/.go/bin" $PATH
 end
 
 # add rust binaries to path
-if test -f "$HOME/.cargo/bin"
+if test -d ~/.cargo/bin
     set PATH "$HOME/.cargo/bin" $PATH
 end
 
