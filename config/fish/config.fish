@@ -11,7 +11,6 @@ end
 
 # add go binaries to path
 if test -d ~/.go
-    set -gx GOPATH "$HOME/.go"
     set PATH "$HOME/.go/bin" $PATH
 end
 
