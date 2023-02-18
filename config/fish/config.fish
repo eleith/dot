@@ -3,6 +3,7 @@ set fish_greeting ""
 
 set -x EDITOR nvim
 set -x VISUAL nvim
+set -gx GOPATH "$HOME/.go"
 
 # add local binaries to path
 if test -d ~/.local/bin
