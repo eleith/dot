@@ -2,6 +2,7 @@ return {
 	"jose-elias-alvarez/null-ls.nvim",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
+		"lewis6991/gitsigns.nvim",
 	},
 	config = function()
 		local null_ls = require("null-ls")
