@@ -41,7 +41,7 @@ if type -q fzf
 --margin=1
 --padding=1
 --info=inline
---bind='ctrl-h:toggle-preview'
+--bind='ctrl-p:toggle-preview'
 "
     if type -q fzf_configure_bindings
         set fzf_directory_opts --bind "ctrl-o:execute($EDITOR {} &> /dev/tty)"
