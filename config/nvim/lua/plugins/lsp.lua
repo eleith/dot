@@ -9,16 +9,7 @@ return {
 		capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 		capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-		local border = {
-			{ "╭", "FloatBorder" },
-			{ "─", "FloatBorder" },
-			{ "╮", "FloatBorder" },
-			{ "│", "FloatBorder" },
-			{ "╯", "FloatBorder" },
-			{ "─", "FloatBorder" },
-			{ "╰", "FloatBorder" },
-			{ "│", "FloatBorder" },
-		}
+		local border = "rounded"
 
 		vim.diagnostic.config({ virtual_text = false, float = { border = border } })
 
@@ -61,40 +52,56 @@ return {
 			vim.lsp.buf.execute_command(params)
 		end
 
-		lspconfig.tsserver.setup({
-			on_attach = on_attach,
-			handlers = handlers,
-			commands = {
-				LspOrganizeImports = {
-					organize_imports,
-					description = "Organize Imports",
+		local servers = {
+			{
+				"tsserver",
+				commands = {
+					LspOrganizeImports = {
+						organize_imports,
+						description = "Organize Imports",
+					},
 				},
 			},
-		})
+			{ "tailwindcss" },
+			{ "flow" },
+			{ "graphql" },
+			{ "html" },
+			{ "intelephense" },
+			{ "jsonls" },
+			{ "pyright" },
+			{ "vimls" },
+			{ "prismals" },
+			{ "solargraph" },
+			{ "bashls" },
+			{ "dockerls" },
+			{ "gopls", {
+				root_dir = function()
+					return vim.loop.cwd()
+				end,
+			} },
+			{ "yamlls" },
+			{ "cssls" },
+		}
 
-		-- lspconfig.eslint.setup{on_attach = on_attach, capabilities = capabilities, handlers = handlers}
-		lspconfig.tailwindcss.setup({ on_attach = on_attach, capabilities = capabilities, handlers = handlers })
-		lspconfig.flow.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.graphql.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.html.setup({ on_attach = on_attach, capabilities = capabilities, handlers = handlers })
-		-- lspconfig.markdown.setup{on_attach = on_attach, capabilities = capabilities, handlers = handlers}
-		lspconfig.intelephense.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.jsonls.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.pyright.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.vimls.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.prismals.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.solargraph.setup({ on_attach = on_attach, capabilities = capabilities, handlers = handlers })
-		-- lspconfig.stylelint_lsp.setup{on_attach = on_attach, handlers = handlers}
-		lspconfig.bashls.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.dockerls.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.gopls.setup({
-			on_attach = on_attach,
-			handlers = handlers,
-			root_dir = function()
-				return vim.loop.cwd()
-			end,
-		})
-		lspconfig.yamlls.setup({ on_attach = on_attach, handlers = handlers })
-		lspconfig.cssls.setup({ on_attach = on_attach, capabilities = capabilities, handlers = handlers })
+		for _, server in pairs(servers) do
+			local config = lspconfig[server[1]]
+			-- Only setup a language server if we have the binary available!
+			if vim.fn.executable(config.document_config.default_config.cmd[1]) == 1 then
+				local opts = {
+					on_attach = on_attach,
+					handlers = handlers,
+					capabilities = capabilities,
+				}
+
+				-- Add custom config if available
+				for k, v in pairs(server) do
+					if type(k) ~= "number" then
+						opts[k] = v
+					end
+				end
+
+				config.setup(opts)
+			end
+		end
 	end,
 }
