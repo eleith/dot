@@ -6,6 +6,8 @@ return {
 	},
 	config = function()
 		local null_ls = require("null-ls")
+		local utils = require("null-ls.utils")
+		local cmd_resolver = require("null-ls.helpers.command_resolver")
 
 		local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 		local async_formatting = function(bufnr)
@@ -54,46 +56,27 @@ return {
 			end,
 			border = "single",
 			sources = {
-				null_ls.builtins.formatting.stylua,
-				null_ls.builtins.diagnostics.eslint,
+				-- nvim plugins
 				null_ls.builtins.completion.spell,
-				null_ls.builtins.diagnostics.erb_lint,
 				null_ls.builtins.code_actions.gitsigns,
-				null_ls.builtins.code_actions.shellcheck,
-				null_ls.builtins.diagnostics.actionlint,
-				null_ls.builtins.diagnostics.buf,
-				null_ls.builtins.diagnostics.checkmake,
-				null_ls.builtins.diagnostics.codespell,
-				null_ls.builtins.diagnostics.fish,
-				null_ls.builtins.diagnostics.flake8,
-				null_ls.builtins.diagnostics.golangci_lint,
-				null_ls.builtins.diagnostics.jsonlint,
-				null_ls.builtins.diagnostics.luacheck,
-				null_ls.builtins.diagnostics.markdownlint,
-				null_ls.builtins.formatting.markdownlint,
-				null_ls.builtins.diagnostics.mypy,
-				null_ls.builtins.diagnostics.php,
-				null_ls.builtins.diagnostics.pylint,
-				null_ls.builtins.diagnostics.rubocop,
-				null_ls.builtins.diagnostics.shellcheck,
-				null_ls.builtins.diagnostics.stylelint,
-				null_ls.builtins.diagnostics.tidy,
-				null_ls.builtins.diagnostics.yamllint,
-				null_ls.builtins.formatting.autopep8,
-				null_ls.builtins.formatting.beautysh,
-				null_ls.builtins.formatting.black,
-				null_ls.builtins.formatting.erb_lint,
-				null_ls.builtins.formatting.eslint,
-				null_ls.builtins.formatting.fish_indent,
-				null_ls.builtins.formatting.fixjson,
-				null_ls.builtins.formatting.gofmt,
-				null_ls.builtins.formatting.gofumpt,
-				null_ls.builtins.formatting.goimports,
-				null_ls.builtins.formatting.isort,
-				null_ls.builtins.formatting.json_tool,
-				null_ls.builtins.formatting.nginx_beautifier,
-				null_ls.builtins.formatting.pg_format,
+
+				-- project local commands
+				null_ls.builtins.formatting.eslint.with({
+					condition = function()
+						return cmd_resolver.from_node_modules("eslint")
+					end,
+				}),
+				null_ls.builtins.diagnostics.eslint.with({
+					condition = function()
+						return cmd_resolver.from_node_modules("eslint")
+					end,
+				}),
+
 				null_ls.builtins.formatting.prettier.with({
+					condition = function()
+						return cmd_resolver.from_node_modules("prettier")
+					end,
+
 					filetypes = {
 						"javascript",
 						"javascriptreact",
@@ -112,9 +95,223 @@ return {
 						"markdown",
 					},
 				}),
-				null_ls.builtins.formatting.prismaFmt,
-				null_ls.builtins.formatting.rubocop,
+
+				-- global commands
+				null_ls.builtins.formatting.stylua.with({
+					condition = function()
+						return utils.is_executable("stylua")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.erb_lint.with({
+					condition = function()
+						return utils.is_executable("erblint")
+					end,
+				}),
+				null_ls.builtins.formatting.erb_lint.with({
+					condition = function()
+						return utils.is_executable("erb_lint")
+					end,
+				}),
+
+				null_ls.builtins.code_actions.shellcheck.with({
+					condition = function()
+						return utils.is_executable("shellcheck")
+					end,
+				}),
+				null_ls.builtins.diagnostics.shellcheck.with({
+					condition = function()
+						return utils.is_executable("shellcheck")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.actionlint.with({
+					condition = function()
+						return utils.is_executable("actionlint")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.buf.with({
+					condition = function()
+						return utils.is_executable("buf")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.checkmake.with({
+					condition = function()
+						return utils.is_executable("checkmake")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.codespell.with({
+					condition = function()
+						return utils.is_executable("codespell")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.fish.with({
+					condition = function()
+						return utils.is_executable("fish")
+					end,
+				}),
+				null_ls.builtins.formatting.fish_indent.with({
+					condition = function()
+						return utils.is_executable("fish_indent")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.flake8.with({
+					condition = function()
+						return utils.is_executable("flake8")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.golangci_lint.with({
+					condition = function()
+						return utils.is_executable("golangci-lint")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.jsonlint.with({
+					condition = function()
+						return utils.is_executable("jsonlint")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.luacheck.with({
+					condition = function()
+						return utils.is_executable("luacheck")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.markdownlint.with({
+					condition = function()
+						return utils.is_executable("markdownlint")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.mypy.with({
+					condition = function()
+						return utils.is_executable("mypy")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.php.with({
+					condition = function()
+						return utils.is_executable("php")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.pylint.with({
+					condition = function()
+						return utils.is_executable("pylint")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.rubocop.with({
+					condition = function()
+						return utils.is_executable("rubocop")
+					end,
+				}),
+				null_ls.builtins.formatting.rubocop.with({
+					condition = function()
+						return utils.is_executable("rubocop")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.stylelint.with({
+					condition = function()
+						return utils.is_executable("stylelint")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.tidy.with({
+					condition = function()
+						return utils.is_executable("tidy")
+					end,
+				}),
+				null_ls.builtins.formatting.tidy.with({
+					condition = function()
+						return utils.is_executable("tidy")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.yamllint.with({
+					condition = function()
+						return utils.is_executable("yamllint")
+					end,
+				}),
+
+				null_ls.builtins.formatting.autopep8.with({
+					condition = function()
+						return utils.is_executable("autopep8")
+					end,
+				}),
+
+				null_ls.builtins.formatting.beautysh.with({
+					condition = function()
+						return utils.is_executable("beautysh")
+					end,
+				}),
+
+				null_ls.builtins.formatting.black.with({
+					condition = function()
+						return utils.is_executable("black")
+					end,
+				}),
+
+				null_ls.builtins.formatting.fixjson.with({
+					condition = function()
+						return utils.is_executable("fixjson")
+					end,
+				}),
+
+				null_ls.builtins.formatting.gofmt.with({
+					condition = function()
+						return utils.is_executable("gofmt")
+					end,
+				}),
+
+				null_ls.builtins.formatting.gofumpt.with({
+					condition = function()
+						return utils.is_executable("gofumpt")
+					end,
+				}),
+
+				null_ls.builtins.formatting.goimports.with({
+					condition = function()
+						return utils.is_executable("goimports")
+					end,
+				}),
+
+				null_ls.builtins.formatting.isort.with({
+					condition = function()
+						return utils.is_executable("isort")
+					end,
+				}),
+
+				null_ls.builtins.formatting.nginx_beautifier.with({
+					condition = function()
+						return utils.is_executable("nginxbeautifier")
+					end,
+				}),
+
+				null_ls.builtins.formatting.pg_format.with({
+					condition = function()
+						return utils.is_executable("pg_format")
+					end,
+				}),
+
+				null_ls.builtins.formatting.prismaFmt.with({
+					condition = function()
+						return utils.is_executable("prisma-fmt")
+					end,
+				}),
+
 				null_ls.builtins.formatting.rustywind.with({
+					condition = function()
+						return utils.is_executable("rustywind")
+					end,
 					filetypes = {
 						"eruby",
 						"javascript",
@@ -126,11 +323,35 @@ return {
 						"html",
 					},
 				}),
-				null_ls.builtins.formatting.shfmt,
-				null_ls.builtins.formatting.terraform_fmt,
-				null_ls.builtins.formatting.yamlfmt,
-				null_ls.builtins.formatting.tidy,
-				null_ls.builtins.formatting.xmllint,
+
+				null_ls.builtins.formatting.shfmt.with({
+					condition = function()
+						return utils.is_executable("shfmt")
+					end,
+				}),
+
+				null_ls.builtins.diagnostics.terraform_validate.with({
+					condition = function()
+						return utils.is_executable("terraform")
+					end,
+				}),
+				null_ls.builtins.formatting.terraform_fmt.with({
+					condition = function()
+						return utils.is_executable("terraform")
+					end,
+				}),
+
+				null_ls.builtins.formatting.yamlfmt.with({
+					condition = function()
+						return utils.is_executable("yamlfmt")
+					end,
+				}),
+
+				null_ls.builtins.formatting.xmllint.with({
+					condition = function()
+						return utils.is_executable("xmllint")
+					end,
+				}),
 			},
 		})
 	end,
