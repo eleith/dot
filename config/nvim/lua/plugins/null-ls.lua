@@ -63,18 +63,33 @@ return {
 				-- project local commands
 				null_ls.builtins.formatting.eslint.with({
 					condition = function()
-						return cmd_resolver.from_node_modules("eslint")
+						local cmd = cmd_resolver.from_node_modules()({
+							command = "eslint",
+							bufnr = vim.api.nvim_get_current_buf(),
+							bufname = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+						})
+						return utils.is_executable(cmd)
 					end,
 				}),
 				null_ls.builtins.diagnostics.eslint.with({
 					condition = function()
-						return cmd_resolver.from_node_modules("eslint")
+						local cmd = cmd_resolver.from_node_modules()({
+							command = "eslint",
+							bufnr = vim.api.nvim_get_current_buf(),
+							bufname = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+						})
+						return utils.is_executable(cmd)
 					end,
 				}),
 
 				null_ls.builtins.formatting.prettier.with({
 					condition = function()
-						return cmd_resolver.from_node_modules("prettier")
+						local cmd = cmd_resolver.from_node_modules()({
+							command = "prettier",
+							bufnr = vim.api.nvim_get_current_buf(),
+							bufname = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+						})
+						return utils.is_executable(cmd)
 					end,
 
 					filetypes = {
@@ -185,6 +200,11 @@ return {
 				}),
 
 				null_ls.builtins.diagnostics.markdownlint.with({
+					condition = function()
+						return utils.is_executable("markdownlint")
+					end,
+				}),
+				null_ls.builtins.formatting.markdownlint.with({
 					condition = function()
 						return utils.is_executable("markdownlint")
 					end,
