@@ -110,7 +110,7 @@ return {
 				}),
 				null_ls.builtins.formatting.erb_lint.with({
 					condition = function()
-						return utils.is_executable("erb_lint")
+						return utils.is_executable("erblint")
 					end,
 				}),
 
