@@ -107,7 +107,6 @@ return {
 						"yaml",
 						"graphql",
 						"handlebars",
-						"markdown",
 					},
 				}),
 
@@ -371,6 +370,14 @@ return {
 					condition = function()
 						return utils.is_executable("xmllint")
 					end,
+				}),
+
+				null_ls.builtins.formatting.deno_fmt.with({
+					condition = function()
+						return utils.is_executable("deno")
+					end,
+
+					filetypes = { "markdown" },
 				}),
 			},
 		})
