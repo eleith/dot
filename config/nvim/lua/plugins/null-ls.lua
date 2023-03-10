@@ -60,6 +60,50 @@ return {
 				null_ls.builtins.completion.spell,
 				null_ls.builtins.code_actions.gitsigns,
 
+				null_ls.builtins.diagnostics.stylelint.with({
+					condition = function(u)
+						local cmd = cmd_resolver.from_node_modules()({
+							command = "stylelint",
+							bufnr = vim.api.nvim_get_current_buf(),
+							bufname = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+						})
+						return utils.is_executable(cmd) and u.root_has_file(".stylelintrc.json")
+					end,
+					filetypes = {
+						"css",
+						"scss",
+						"less",
+						"vue",
+						"html",
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+					},
+				}),
+
+				null_ls.builtins.formatting.stylelint.with({
+					condition = function(u)
+						local cmd = cmd_resolver.from_node_modules()({
+							command = "stylelint",
+							bufnr = vim.api.nvim_get_current_buf(),
+							bufname = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
+						})
+						return utils.is_executable(cmd) and u.root_has_file(".stylelintrc.json")
+					end,
+					filetypes = {
+						"css",
+						"scss",
+						"less",
+						"vue",
+						"html",
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+					},
+				}),
+
 				-- project local commands
 				null_ls.builtins.formatting.eslint.with({
 					condition = function()
@@ -235,12 +279,6 @@ return {
 				null_ls.builtins.formatting.rubocop.with({
 					condition = function()
 						return utils.is_executable("rubocop")
-					end,
-				}),
-
-				null_ls.builtins.diagnostics.stylelint.with({
-					condition = function()
-						return utils.is_executable("stylelint")
 					end,
 				}),
 
