@@ -6,19 +6,30 @@ return {
 	config = function()
 		local lspconfig = require("lspconfig")
 		local capabilities = vim.lsp.protocol.make_client_capabilities()
+		local lspwindow = require("lspconfig.ui.windows")
+
 		capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 		capabilities.textDocument.completion.completionItem.snippetSupport = true
 
+		vim.diagnostic.config({ virtual_text = false })
+
+		-- override all window borders
+		local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
 		local border = "rounded"
 
-		vim.diagnostic.config({ virtual_text = false, float = { border = border } })
+		function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+			opts = opts or {}
+			opts.border = border
+			return orig_util_open_floating_preview(contents, syntax, opts, ...)
+		end
 
-		-- LSP settings (for overriding per client)
-		local handlers = {
-			["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border }),
-			["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border }),
+		-- lspinfo needs a separate override
+		lspwindow.default_options = {
+			border = border,
 		}
 
+		-- LSP settings (for overriding per client)
+		local handlers = {}
 		local opts = { noremap = true, silent = true }
 
 		vim.keymap.set("n", "<space>e", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
