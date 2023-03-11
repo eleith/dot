@@ -3,5 +3,5 @@ return {
 	"tmux-plugins/vim-tmux",
 	"github/copilot.vim",
 	"farmergreg/vim-lastplace",
-	"moll/vim-bbye",
+	"famiu/bufdelete.nvim",
 }
