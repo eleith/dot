@@ -48,8 +48,3 @@ if type -q fzf
         fzf_configure_bindings --directory=\cf --git_status=\cg
     end
 end
-
-if not functions -q fisher && status is-interactive
-    set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME ~/.config
-    curl https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish --create-dirs -sLo $XDG_CONFIG_HOME/fish/functions/fisher.fish
-end
