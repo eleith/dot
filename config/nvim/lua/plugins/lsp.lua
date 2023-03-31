@@ -92,6 +92,7 @@ return {
 			} },
 			{ "yamlls" },
 			{ "cssls" },
+			{ "lua_ls" },
 		}
 
 		for _, server in pairs(servers) do

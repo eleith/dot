@@ -154,12 +154,6 @@ return {
 				}),
 
 				-- global commands
-				null_ls.builtins.formatting.stylua.with({
-					condition = function()
-						return utils.is_executable("stylua")
-					end,
-				}),
-
 				null_ls.builtins.diagnostics.erb_lint.with({
 					condition = function()
 						return utils.is_executable("erblint")
@@ -238,6 +232,11 @@ return {
 				null_ls.builtins.diagnostics.luacheck.with({
 					condition = function()
 						return utils.is_executable("luacheck")
+					end,
+				}),
+				null_ls.builtins.formatting.stylua.with({
+					condition = function()
+						return utils.is_executable("stylua")
 					end,
 				}),
 
