@@ -90,7 +90,19 @@ return {
 					return vim.loop.cwd()
 				end,
 			} },
-			{ "yamlls" },
+			{
+				"yamlls",
+				{
+					settings = {
+						yaml = {
+							schemas = {
+								["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+								["https://raw.githubusercontent.com/woodpecker-ci/woodpecker/master/pipeline/schema/schema.json"] = "/.woodpecker",
+							},
+						},
+					},
+				},
+			},
 			{ "cssls" },
 			{ "lua_ls" },
 		}
