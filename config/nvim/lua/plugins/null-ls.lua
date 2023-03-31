@@ -135,7 +135,6 @@ return {
 						})
 						return utils.is_executable(cmd)
 					end,
-
 					filetypes = {
 						"javascript",
 						"javascriptreact",
@@ -146,10 +145,9 @@ return {
 						"scss",
 						"less",
 						"html",
-						"jsonc",
 						"yaml",
+						"jsonc",
 						"graphql",
-						"handlebars",
 					},
 				}),
 
@@ -173,12 +171,6 @@ return {
 				null_ls.builtins.diagnostics.shellcheck.with({
 					condition = function()
 						return utils.is_executable("shellcheck")
-					end,
-				}),
-
-				null_ls.builtins.diagnostics.actionlint.with({
-					condition = function()
-						return utils.is_executable("actionlint")
 					end,
 				}),
 
@@ -291,12 +283,6 @@ return {
 					end,
 				}),
 
-				null_ls.builtins.diagnostics.yamllint.with({
-					condition = function()
-						return utils.is_executable("yamllint")
-					end,
-				}),
-
 				null_ls.builtins.formatting.autopep8.with({
 					condition = function()
 						return utils.is_executable("autopep8")
@@ -396,9 +382,9 @@ return {
 					end,
 				}),
 
-				null_ls.builtins.formatting.yamlfmt.with({
+				null_ls.builtins.diagnostics.actionlint.with({
 					condition = function()
-						return utils.is_executable("yamlfmt")
+						return utils.is_executable("actionlint")
 					end,
 				}),
 
@@ -412,7 +398,6 @@ return {
 					condition = function()
 						return utils.is_executable("deno")
 					end,
-
 					filetypes = { "markdown" },
 				}),
 			},
