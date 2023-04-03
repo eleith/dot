@@ -11,7 +11,14 @@ return {
 		capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 		capabilities.textDocument.completion.completionItem.snippetSupport = true
 
+		-- disable showing diagnostics in virtual text
 		vim.diagnostic.config({ virtual_text = false })
+
+		-- close quickfix menu after selecting choice
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = { "qf" },
+			command = [[nnoremap <buffer> <CR> <CR>:cclose<CR>]],
+		})
 
 		-- override all window borders
 		local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
