@@ -32,10 +32,13 @@ return {
 
 					if res then
 						local client = vim.lsp.get_client_by_id(ctx.client_id)
-						vim.lsp.util.apply_text_edits(res, bufnr, client and client.offset_encoding or "utf-16")
-						vim.api.nvim_buf_call(bufnr, function()
-							vim.cmd("silent noautocmd update")
-						end)
+
+						if client.name == "null-ls" then
+							vim.lsp.util.apply_text_edits(res, bufnr, client and client.offset_encoding or "utf-16")
+							vim.api.nvim_buf_call(bufnr, function()
+								vim.cmd("silent noautocmd update")
+							end)
+						end
 					end
 				end
 			)
@@ -146,7 +149,7 @@ return {
 						"less",
 						"html",
 						"yaml",
-						"jsonc",
+						"json",
 						"graphql",
 					},
 				}),
@@ -212,12 +215,6 @@ return {
 				null_ls.builtins.diagnostics.golangci_lint.with({
 					condition = function()
 						return utils.is_executable("golangci-lint")
-					end,
-				}),
-
-				null_ls.builtins.diagnostics.jsonlint.with({
-					condition = function()
-						return utils.is_executable("jsonlint")
 					end,
 				}),
 
@@ -298,12 +295,6 @@ return {
 				null_ls.builtins.formatting.black.with({
 					condition = function()
 						return utils.is_executable("black")
-					end,
-				}),
-
-				null_ls.builtins.formatting.fixjson.with({
-					condition = function()
-						return utils.is_executable("fixjson")
 					end,
 				}),
 
