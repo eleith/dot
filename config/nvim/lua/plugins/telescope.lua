@@ -7,6 +7,7 @@ return {
 		local telescope = require("telescope")
 		local actions = require("telescope.actions")
 		local layout = require("telescope.actions.layout")
+		local builtin = require("telescope.builtin")
 
 		telescope.setup({
 			defaults = {
@@ -24,32 +25,9 @@ return {
 			},
 		})
 
-		vim.api.nvim_set_keymap(
-			"n",
-			"<space>ff",
-			[[<Cmd>lua require('telescope.builtin').find_files()<CR>]],
-			{ noremap = true, silent = true }
-		)
-
-		vim.api.nvim_set_keymap(
-			"n",
-			"<space>ft",
-			[[<Cmd>lua require('telescope.builtin').treesitter()<CR>]],
-			{ noremap = true, silent = true }
-		)
-
-		vim.api.nvim_set_keymap(
-			"n",
-			"<space>fg",
-			[[<Cmd>lua require('telescope.builtin').live_grep()<CR>]],
-			{ noremap = true, silent = true }
-		)
-
-		vim.api.nvim_set_keymap(
-			"n",
-			"<space>fb",
-			[[<Cmd>lua require('telescope.builtin').buffers()<CR>]],
-			{ noremap = true, silent = true }
-		)
+		vim.keymap.set("n", "<leader>ff", builtin.find_files, { noremap = true, silent = true })
+		vim.keymap.set("n", "<leader>ft", builtin.treesitter, { noremap = true, silent = true })
+		vim.keymap.set("n", "<leader>fg", builtin.live_grep, { noremap = true, silent = true })
+		vim.keymap.set("n", "<leader>fb", builtin.buffers, { noremap = true, silent = true })
 	end,
 }

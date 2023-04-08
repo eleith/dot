@@ -44,7 +44,9 @@ return {
 			local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
 			-- See `:help vim.lsp.*` for more methods
-			vim.keymap.set("n", "<space>f", vim.lsp.buf.format, bufopts)
+			vim.keymap.set("n", "<leader>bf", function()
+				vim.lsp.buf.format({ timeout = 2000, async = true })
+			end, bufopts)
 		end
 
 		local function organize_imports()
