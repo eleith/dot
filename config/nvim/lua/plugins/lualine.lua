@@ -13,23 +13,16 @@ return {
 		sections = {
 			lualine_a = { "mode" },
 			lualine_b = { "branch" },
-			lualine_c = {
-				{
-					"buffers",
-					separator = { right = "", left = "" },
-				},
-			},
+			lualine_c = { "filename" },
 			lualine_x = {},
 			lualine_y = {
 				"progress",
 				{
 					"diagnostics",
-					sources = { "nvim_diagnostic" },
+					sources = { "nvim_lsp", "nvim_diagnostic" },
 				},
 			},
-			lualine_z = {
-				"location",
-			},
+			lualine_z = { "location" },
 		},
 		inactive_sections = {
 			lualine_a = {},
