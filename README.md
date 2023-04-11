@@ -13,11 +13,8 @@ i can quickly reference and share them
 ## tools
 
 i use [fish](https://fishshell.com/), [tmux](https://github.com/tmux/tmux/wiki),
-[nvim](https://neovim.io/) and [gnome-terminal](https://gitlab.gnome.org/GNOME/gnome-terminal)
-as my top level terminal tools
+[nvim](https://neovim.io/) and [wezterm](https://wezfurlong.org/wezterm/)
 
 ## colorscheme
 
-exclusively [solarized](https://ethanschoonover.com/solarized/) in the past, then
-switched to [gruvbox](https://github.com/gruvbox-community/gruvbox) for various
-reasons
+i've mostly used [solarized](https://ethanschoonover.com/solarized/) in the past, however, i'm currently using [gruvbox](https://github.com/gruvbox-community/gruvbox)
