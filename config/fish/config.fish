@@ -48,3 +48,5 @@ if type -q fzf
         fzf_configure_bindings --directory=\cf --git_status=\cg
     end
 end
+
+fish_config theme choose gruvbox-dark
