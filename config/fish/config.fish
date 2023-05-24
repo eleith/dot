@@ -49,4 +49,8 @@ if type -q fzf
     end
 end
 
+# set theme
 fish_config theme choose gruvbox-dark
+
+# set keybindings
+bind \cB beginning-of-line
