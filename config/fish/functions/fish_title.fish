@@ -1,6 +1,5 @@
 function fish_title --argument-names last_cmd
     set prefix ""
-    set last_path (string split ' ' $last_cmd)[2..]
 
     if set -q SSH_CLIENT
         if not set -q TMUX
@@ -13,7 +12,14 @@ function fish_title --argument-names last_cmd
     if [ fish != $_ ]
         switch $_
             case vi vim nvim
+              set last_path (string split ' ' $last_cmd)[2..]
+
+              if test -n "$last_path"
+                and test -f "$last_path"
                 echo "$prefix$_ $(path basename $last_path)"
+              else
+                echo "$prefix$last_cmd"
+              end 
             case '*'
                 echo "$prefix$last_cmd"
         end
