@@ -41,7 +41,7 @@ return {
 				["<C-e>"] = cmp.mapping.abort(),
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
 			}),
-			sources = {
+			sources = cmp.config.sources({
 				{ name = "nvim_lsp" },
 				{ name = "nvim_diagnostic" },
 				{ name = "buffer" },
@@ -50,7 +50,7 @@ return {
 				{ name = "nvim_lua" },
 				{ name = "nvim_lsp_signature_help" },
 				{ name = "emoji" },
-			},
+			}),
 			formatting = {
 				format = lspkind.cmp_format({
 					mode = "symbol_text",
