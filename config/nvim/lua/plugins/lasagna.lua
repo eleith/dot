@@ -13,7 +13,7 @@ return {
 				enable = false,
 			},
 			diagnostic = {
-        show_code_action = false,
+				show_code_actions = false,
 			},
 		})
 
