@@ -1,5 +1,5 @@
 return {
-	"glepnir/lspsaga.nvim",
+	"nvimdev/lspsaga.nvim",
 	event = "LspAttach",
 	config = function()
 		require("lspsaga").setup({
@@ -13,7 +13,7 @@ return {
 				enable = false,
 			},
 			diagnostic = {
-				show_code_action = false,
+        show_code_action = false,
 			},
 		})
 
