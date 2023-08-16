@@ -19,7 +19,7 @@ return {
 				"progress",
 				{
 					"diagnostics",
-					sources = { "nvim_lsp", "nvim_diagnostic" },
+					sources = { "nvim_diagnostic" },
 				},
 			},
 			lualine_z = { "location" },
