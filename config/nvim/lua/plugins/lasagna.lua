@@ -15,6 +15,9 @@ return {
 			diagnostic = {
 				show_code_actions = false,
 			},
+			rename = {
+				in_select = false
+			}
 		})
 
 		local keymap = vim.keymap.set
