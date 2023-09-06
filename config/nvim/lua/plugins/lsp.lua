@@ -77,7 +77,7 @@ return {
 			{ "bashls" },
 			{ "dockerls" },
 			{ "solargraph" },
-			-- { "rubocop" }, -- needs rubocop >= 1.54
+			{ "rubocop" },
 			-- { "ruby_ls" }, -- wait for nvim 0.10
 			{ "gopls", {
 				root_dir = function()
@@ -117,7 +117,6 @@ return {
 				filetypes = {
 					"lua",
 					"fish",
-					"ruby",
 					"html",
 					"javascript",
 					"typescript",
@@ -145,9 +144,6 @@ return {
 						},
 						html = {
 							require("efmls-configs.formatters.prettier"),
-						},
-						ruby = {
-							require("efmls-configs.linters.rubocop"),
 						},
 						javascript = {
 							require("efmls-configs.formatters.prettier"),
