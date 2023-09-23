@@ -47,6 +47,10 @@ vim.cmd("set tabstop=2")
 -- tabs are represented by 2 spaces during auto-indent
 vim.cmd("set shiftwidth=2")
 
+-- set title as new files are opened
+vim.cmd("set titlestring=vi\\ %t")
+vim.cmd("set title")
+
 -- set theme
 vim.cmd("set termguicolors")
 vim.cmd([["let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"]])
