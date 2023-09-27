@@ -47,7 +47,7 @@ vim.cmd("set tabstop=2")
 -- tabs are represented by 2 spaces during auto-indent
 vim.cmd("set shiftwidth=2")
 
--- set title as new files are opened
+-- set title as new buffers/files are opened
 vim.cmd("set titlestring=vi\\ %t")
 vim.cmd("set title")
 

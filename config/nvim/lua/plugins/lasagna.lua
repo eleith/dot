@@ -17,7 +17,7 @@ return {
 			},
 			rename = {
 				in_select = false
-			}
+			},
 		})
 
 		local keymap = vim.keymap.set
