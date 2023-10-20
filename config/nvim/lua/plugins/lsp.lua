@@ -123,7 +123,8 @@ return {
 					"javascriptreact",
 					"typescriptreact",
 					"javascript.tsx",
-					"typescript.tsx"
+					"typescript.tsx",
+					"markdown",
 				},
 				init_options = {
 					documentFormatting = true,
@@ -163,6 +164,10 @@ return {
 						["typescript.tsx"] = {
 							require("efmls-configs.formatters.prettier"),
 						},
+						markdown = {
+							require("efmls-configs.linters.markdownlint"),
+							require("efmls-configs.formatters.prettier"),
+						}
 					},
 				},
 			},
