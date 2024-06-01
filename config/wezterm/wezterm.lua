@@ -37,5 +37,8 @@ config.colors = {
   visual_bell = '#202020',
 }
 
+-- disable update check
+
+config.check_for_updates = false
 
 return config

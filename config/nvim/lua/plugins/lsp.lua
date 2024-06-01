@@ -21,19 +21,9 @@ return {
 			command = [[nnoremap <buffer> <CR> <CR>:cclose<CR>]],
 		})
 
-		-- override all window borders
-		local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
-		local border = "rounded"
-
-		function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-			opts = opts or {}
-			opts.border = border
-			return orig_util_open_floating_preview(contents, syntax, opts, ...)
-		end
-
 		-- lspinfo needs a separate override
 		lspwindow.default_options = {
-			border = border,
+			border = "rounded",
 		}
 
 		-- LSP settings (for overriding per client)
@@ -76,14 +66,10 @@ return {
 			{ "vimls" },
 			{ "bashls" },
 			{ "dockerls" },
-			{ "solargraph" },
 			{ "rubocop" },
-			-- { "ruby_ls" }, -- wait for nvim 0.10
-			{ "gopls", {
-				root_dir = function()
-					return vim.loop.cwd()
-				end,
-			} },
+			{ "marksman" },
+			{ "ruby_lsp" },
+			{ "gopls" },
 			{ "eslint" },
 			{
 				"yamlls",
@@ -91,7 +77,8 @@ return {
 					yaml = {
 						schemas = {
 							["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
-							["https://raw.githubusercontent.com/woodpecker-ci/woodpecker/master/pipeline/schema/schema.json"] = "/.woodpecker",
+							["https://raw.githubusercontent.com/woodpecker-ci/woodpecker/master/pipeline/schema/schema.json"] =
+							"/.woodpecker",
 						},
 					},
 				},
@@ -125,6 +112,7 @@ return {
 					"javascript.tsx",
 					"typescript.tsx",
 					"markdown",
+					"eruby",
 				},
 				init_options = {
 					documentFormatting = true,
@@ -136,6 +124,19 @@ return {
 				settings = {
 					rootMarkers = { ".git/" },
 					languages = {
+						eruby = {
+							{
+								prefix = "erblint",
+								lintCommand = "erblint --format compact --stdin ${INPUT}",
+								lintStdin = true,
+								lintFormats = {
+									"%f:%l:%c: %m",
+								},
+								lintIgnoreExitCode = true,
+								formatCommand = "htmlbeautifier",
+								formatStdin = true,
+							}
+						},
 						lua = {
 							require("efmls-configs.linters.luacheck"),
 						},
