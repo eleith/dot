@@ -84,6 +84,7 @@ return {
 				},
 			},
 			{ "stylelint_lsp" },
+			{ "svelte" },
 			{
 				"html",
 				settings = {
@@ -113,6 +114,7 @@ return {
 					"typescript.tsx",
 					"markdown",
 					"eruby",
+					"svelte",
 				},
 				init_options = {
 					documentFormatting = true,
@@ -168,7 +170,10 @@ return {
 						markdown = {
 							require("efmls-configs.linters.markdownlint"),
 							require("efmls-configs.formatters.prettier"),
-						}
+						},
+						svelte = {
+							require("efmls-configs.formatters.prettier"),
+						},
 					},
 				},
 			},
