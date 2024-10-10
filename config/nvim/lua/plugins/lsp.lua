@@ -7,7 +7,6 @@ return {
 	config = function()
 		local lspconfig = require("lspconfig")
 		local capabilities = vim.lsp.protocol.make_client_capabilities()
-		local lspwindow = require("lspconfig.ui.windows")
 
 		capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 		capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -20,11 +19,6 @@ return {
 			pattern = { "qf" },
 			command = [[nnoremap <buffer> <CR> <CR>:cclose<CR>]],
 		})
-
-		-- lspinfo needs a separate override
-		lspwindow.default_options = {
-			border = "rounded",
-		}
 
 		-- LSP settings (for overriding per client)
 		local handlers = {}
@@ -114,6 +108,7 @@ return {
 					"typescript.tsx",
 					"markdown",
 					"eruby",
+					"yaml",
 					"svelte",
 				},
 				init_options = {
@@ -145,6 +140,9 @@ return {
 						fish = {
 							require("efmls-configs.linters.fish"),
 							require("efmls-configs.formatters.fish_indent"),
+						},
+						yaml = {
+							require("efmls-configs.formatters.prettier"),
 						},
 						html = {
 							require("efmls-configs.formatters.prettier"),
