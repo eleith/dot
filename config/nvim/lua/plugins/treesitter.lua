@@ -26,6 +26,7 @@ return {
 			"prisma",
 			"markdown",
 			"ruby",
+			"svelte",
 		},
 		indent = {
 			enable = true,

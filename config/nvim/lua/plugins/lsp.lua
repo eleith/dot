@@ -50,7 +50,7 @@ return {
 
 		local servers = {
 			{
-				"tsserver",
+				"ts_ls",
 				commands = {
 					LspOrganizeImports = {
 						organize_imports,
