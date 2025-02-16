@@ -60,9 +60,16 @@ return {
 			{ "vimls" },
 			{ "bashls" },
 			{ "dockerls" },
-			{ "rubocop" },
 			{ "marksman" },
-			{ "ruby_lsp" },
+			{
+				"ruby_lsp",
+				settings = {
+					mason = false,
+					cmd = { vim.fn.expand("~/.asdf/shims/ruby-lsp") },
+					formatter = 'standard',
+					linters = { 'standard' },
+				},
+			},
 			{ "gopls" },
 			{ "eslint" },
 			{
