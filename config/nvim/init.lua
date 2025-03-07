@@ -72,6 +72,9 @@ if vim.env.TERM == "tmux-256color" then
 	vim.loop.fs_write(2, "\27Ptmux;\27\27]11;?\7\27\\", -1, nil)
 end
 
+-- disable copilot on startup
+vim.cmd([[autocmd VimEnter * Copilot disable]])
+
 -- load plugins folder with lazy.nvim
 require("lazy").setup("plugins", {
 	ui = {
