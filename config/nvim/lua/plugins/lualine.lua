@@ -14,7 +14,12 @@ return {
 			lualine_a = { "mode" },
 			lualine_b = { "branch" },
 			lualine_c = { "filename" },
-			lualine_x = {},
+			lualine_x = {
+				{
+					"lsp_status",
+					ignore_lsp = { "GitHub Copilot" }
+				}
+			},
 			lualine_y = {
 				"progress",
 				{

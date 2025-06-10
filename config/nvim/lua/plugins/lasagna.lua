@@ -18,6 +18,9 @@ return {
 			rename = {
 				in_select = false
 			},
+			ui = {
+				code_action = "i"
+			}
 		})
 
 		local keymap = vim.keymap.set
