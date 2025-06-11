@@ -5,6 +5,22 @@ return {
 	---@type snacks.Config
 	opts = {
 		bigfile = { enabled = true },
+		gitbrowse = {
+			url_patterns = {
+				["github%.com"] = {
+					branch = "/tree/{branch}",
+					file = "/blob/{branch}/{file}#L{line_start}-L{line_end}",
+					permalink = "/blob/{commit}/{file}#L{line_start}-L{line_end}",
+					commit = "/commit/{commit}",
+				},
+				["git.eleith.com"] = {
+					branch = "/src/branch/{branch}",
+					file = "/src/{branch}/{file}#L{line_start}-L{line_end}",
+					permalink = "/src/{commit}/{file}#L{line_start}-L{line_end}",
+					commit = "/src/commit/{commit}",
+				},
+			},
+		},
 		dashboad = { enabled = false },
 		explorer = { enabled = true },
 		indent = { enabled = false },
@@ -85,6 +101,8 @@ return {
 		{ "<leader>S",       function() Snacks.scratch.select() end,                                 desc = "Select Scratch Buffer" },
 		{ "<leader>n",       function() Snacks.notifier.show_history() end,                          desc = "Notification History" },
 		{ "<leader>bd",      function() Snacks.bufdelete() end,                                      desc = "Delete Buffer" },
+		{ "<leader>cr",      function() vim.lsp.buf.rename() end,                                    desc = "Rename Symbol" },
+		{ "<leader>ca",      function() vim.lsp.buf.code_action() end,                               desc = "Show Code Action" },
 		{ "<leader>cR",      function() Snacks.rename.rename_file() end,                             desc = "Rename File" },
 		{ "<leader>gB",      function() Snacks.gitbrowse() end,                                      desc = "Git Browse",               mode = { "n", "v" } },
 		{ "<leader>gg",      function() Snacks.lazygit() end,                                        desc = "Lazygit" },
@@ -93,24 +111,6 @@ return {
 		{ "<c-_>",           function() Snacks.terminal() end,                                       desc = "which_key_ignore" },
 		{ "]]",              function() Snacks.words.jump(vim.v.count1) end,                         desc = "Next Reference",           mode = { "n", "t" } },
 		{ "[[",              function() Snacks.words.jump(-vim.v.count1) end,                        desc = "Prev Reference",           mode = { "n", "t" } },
-		{
-			"<leader>N",
-			desc = "Neovim News",
-			function()
-				Snacks.win({
-					file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
-					width = 0.6,
-					height = 0.6,
-					wo = {
-						spell = false,
-						wrap = false,
-						signcolumn = "yes",
-						statuscolumn = " ",
-						conceallevel = 3,
-					},
-				})
-			end,
-		}
 	},
 	init = function()
 		vim.api.nvim_create_autocmd("User", {
@@ -138,6 +138,22 @@ return {
 				Snacks.toggle.inlay_hints():map("<leader>uh")
 				Snacks.toggle.indent():map("<leader>ug")
 				Snacks.toggle.dim():map("<leader>uD")
+
+				-- Add Copilot toggle
+				Snacks.toggle.new({
+					id = "copilot",
+					name = "github copilot",
+					get = function()
+						return require("copilot-status").is_enabled()
+					end,
+					set = function(state)
+						if state then
+							vim.cmd("Copilot enable")
+						else
+							vim.cmd("Copilot disable")
+						end
+					end,
+				}):map("<leader>ai")
 			end,
 		})
 	end,

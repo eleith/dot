@@ -18,7 +18,8 @@ return {
 				{
 					"lsp_status",
 					ignore_lsp = { "GitHub Copilot" }
-				}
+				},
+				"copilot",
 			},
 			lualine_y = {
 				"progress",
