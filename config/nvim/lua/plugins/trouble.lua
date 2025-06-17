@@ -3,6 +3,11 @@ return {
  opts = {
 		auto_close = true,
 		width = 400,
+		win = {
+			wo = {
+				wrap = true,
+			}
+		}
  },
  cmd = "Trouble",
  keys = {
