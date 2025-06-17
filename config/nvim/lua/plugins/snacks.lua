@@ -13,7 +13,7 @@ return {
 					permalink = "/blob/{commit}/{file}#L{line_start}-L{line_end}",
 					commit = "/commit/{commit}",
 				},
-				["git.eleith.com"] = {
+				["git.%S+%.com"] = {
 					branch = "/src/branch/{branch}",
 					file = "/src/{branch}/{file}#L{line_start}-L{line_end}",
 					permalink = "/src/{commit}/{file}#L{line_start}-L{line_end}",

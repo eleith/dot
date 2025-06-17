@@ -31,27 +31,15 @@ return {
 			vim.keymap.set("n", "<leader>bf", function()
 				vim.lsp.buf.format({ timeout = 2000, async = true })
 			end, bufopts)
-		end
 
-		local function organize_imports()
-			local params = {
-				command = "_typescript.organizeImports",
-				arguments = { vim.api.nvim_buf_get_name(0) },
-				title = "",
-			}
-			vim.lsp.buf.execute_command(params)
+			-- See `:help vim.lsp.*` for more methods
+			vim.keymap.set("n", "K", function()
+				vim.lsp.buf.hover({ border = "rounded" })
+			end, bufopts)
 		end
 
 		local servers = {
-			{
-				"ts_ls",
-				commands = {
-					LspOrganizeImports = {
-						organize_imports,
-						description = "Organize Imports",
-					},
-				},
-			},
+			{ "ts_ls" },
 			{ "tailwindcss" },
 			{ "graphql" },
 			{ "intelephense" },
