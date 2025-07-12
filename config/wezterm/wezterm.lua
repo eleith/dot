@@ -21,6 +21,7 @@ config.color_scheme = scheme_for_appearance(get_appearance())
 config.hide_tab_bar_if_only_one_tab = true
 config.adjust_window_size_when_changing_font_size = false
 config.window_decorations = "RESIZE"
+config.warn_about_missing_glyphs = false
 
 -- disable audio bell
 
