@@ -12,7 +12,10 @@ return {
 		capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 		-- disable showing diagnostics in virtual text
-		vim.diagnostic.config({ virtual_text = false })
+		vim.diagnostic.config({
+			virtual_text = false,
+			float = { border = "rounded", focusable = true, header = false }
+		})
 
 		-- close quickfix menu after selecting choice
 		vim.api.nvim_create_autocmd("FileType", {
@@ -24,17 +27,18 @@ return {
 		local handlers = {}
 
 		local on_attach = function(_, bufnr)
-			-- Mappings.
 			local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
-			-- See `:help vim.lsp.*` for more methods
 			vim.keymap.set("n", "<leader>bf", function()
 				vim.lsp.buf.format({ timeout = 2000, async = true })
 			end, bufopts)
 
-			-- See `:help vim.lsp.*` for more methods
-			vim.keymap.set("n", "K", function()
+			vim.keymap.set("n", "<leader>xk", function()
 				vim.lsp.buf.hover({ border = "rounded" })
+			end, bufopts)
+
+			vim.keymap.set("n", "<leader>xd", function()
+				vim.diagnostic.open_float(nil)
 			end, bufopts)
 		end
 
