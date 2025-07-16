@@ -27,19 +27,32 @@ return {
 		local handlers = {}
 
 		local on_attach = function(_, bufnr)
-			local bufopts = { noremap = true, silent = true, buffer = bufnr }
-
 			vim.keymap.set("n", "<leader>bf", function()
 				vim.lsp.buf.format({ timeout = 2000, async = true })
-			end, bufopts)
+			end, {
+				noremap = true,
+				silent = true,
+				buffer = bufnr,
+				desc = "format buffer with LSP",
+			})
 
 			vim.keymap.set("n", "<leader>xk", function()
 				vim.lsp.buf.hover({ border = "rounded" })
-			end, bufopts)
+			end, {
+				noremap = true,
+				silent = true,
+				buffer = bufnr,
+				desc = "show LSP hover",
+			})
 
 			vim.keymap.set("n", "<leader>xd", function()
 				vim.diagnostic.open_float(nil)
-			end, bufopts)
+			end, {
+				noremap = true,
+				silent = true,
+				buffer = bufnr,
+				desc = "show LSP diagnostics",
+			})
 		end
 
 		local servers = {
