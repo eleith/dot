@@ -76,6 +76,7 @@ return {
 				},
 			},
 			{ "gopls" },
+			{ "templ" },
 			{
 				"golangci_lint_ls",
 				settings = {
@@ -108,6 +109,11 @@ return {
 			{ "svelte" },
 			{
 				"html",
+				filetypes = {
+					"html",
+					"templ",
+					"gotmpl",
+				},
 				settings = {
 					html = {
 						hover = {
@@ -169,6 +175,9 @@ return {
 							require("efmls-configs.formatters.fish_indent"),
 						},
 						yaml = {
+							require("efmls-configs.formatters.prettier"),
+						},
+						gotmpl = {
 							require("efmls-configs.formatters.prettier"),
 						},
 						html = {
