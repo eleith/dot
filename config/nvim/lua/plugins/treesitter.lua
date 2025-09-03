@@ -7,7 +7,6 @@ return {
 			"bash",
 			"c",
 			"css",
-			"dockerfile",
 			"fish",
 			"go",
 			"graphql",

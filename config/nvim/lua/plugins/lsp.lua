@@ -5,7 +5,6 @@ return {
 		"creativenull/efmls-configs-nvim",
 	},
 	config = function()
-		local lspconfig = require("lspconfig")
 		local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 		capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
@@ -55,16 +54,18 @@ return {
 			})
 		end
 
+		--vim.lsp.enable("docker_language_server")
+
 		local servers = {
 			{ "ts_ls" },
 			{ "tailwindcss" },
 			{ "graphql" },
 			{ "intelephense" },
+			{ "docker_language_server" },
 			{ "jsonls" },
 			{ "pyright" },
 			{ "vimls" },
 			{ "bashls" },
-			{ "dockerls" },
 			{ "marksman" },
 			{
 				"ruby_lsp",
@@ -233,7 +234,6 @@ return {
 		}
 
 		for _, server in pairs(servers) do
-			local config = lspconfig[server[1]]
 			local setup_config = {
 				on_attach = on_attach,
 				handlers = handlers,
@@ -247,7 +247,8 @@ return {
 				end
 			end
 
-			config.setup(setup_config)
+			vim.lsp.enable(server[1])
+			vim.lsp.config(server[1], setup_config)
 		end
 	end,
 }

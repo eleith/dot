@@ -7,5 +7,9 @@ return {
 			add = { text = "+" },
 			delete = { text = "-" },
 		},
+		signs_staged = {
+			add = { text = "+" },
+			delete = { text = "-" },
+		},
 	},
 }
