@@ -52,7 +52,5 @@ return {
 	},
 	config = function(_, opts)
 		require("nvim-treesitter.configs").setup(opts)
-		vim.treesitter.language.register("html", "eta")
-		vim.filetype.add({ extension = { eta = "eta" }})
 	end,
 }

@@ -80,6 +80,8 @@ vim.opt_local.wrap = true
 vim.opt_local.textwidth = 80
 
 -- register uncommon file types
+vim.treesitter.language.register("html", "eta")
+
 vim.filetype.add({ extension = { eta = "eta" }})
 vim.filetype.add({ extension = { gohtml = "gotmpl" }})
 vim.filetype.add({ extension = { gotext = "gotexttmpl" }})
