@@ -148,21 +148,6 @@ return {
 				Snacks.toggle.indent():map("<leader>ug")
 				Snacks.toggle.dim():map("<leader>uD")
 
-				-- Add Copilot toggle
-				Snacks.toggle.new({
-					id = "copilot",
-					name = "github copilot",
-					get = function()
-						return require("copilot-status").is_enabled()
-					end,
-					set = function(state)
-						if state then
-							vim.cmd("Copilot enable")
-						else
-							vim.cmd("Copilot disable")
-						end
-					end,
-				}):map("<leader>ai")
 			end,
 		})
 	end,

@@ -67,6 +67,7 @@ return {
 			{ "vimls" },
 			{ "bashls" },
 			{ "marksman" },
+			{ "fish_lsp" },
 			{
 				"ruby_lsp",
 				settings = {

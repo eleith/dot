@@ -19,7 +19,16 @@ return {
 					"lsp_status",
 					ignore_lsp = { "GitHub Copilot" }
 				},
-				"copilot",
+				{
+					"copilot",
+					symbols = {
+						status = {
+							icons = {
+								unknown = ""
+							}
+						}
+					}
+				}
 			},
 			lualine_y = {
 				"progress",

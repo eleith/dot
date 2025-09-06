@@ -1,18 +1,21 @@
 -- lazy setup
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
-if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
-		lazypath,
-	})
+if not vim.uv.fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
 end
-
 vim.opt.rtp:prepend(lazypath)
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -69,11 +72,20 @@ vim.opt.completeopt = "menuone,noselect"
 
 -- https://github.com/neovim/neovim/issues/17070#issuecomment-1086775760
 if vim.env.TERM == "tmux-256color" then
-	vim.loop.fs_write(2, "\27Ptmux;\27\27]11;?\7\27\\", -1, nil)
+	vim.uv.fs_write(2, "\27Ptmux;\27\27]11;?\7\27\\", -1, nil)
 end
 
--- disable copilot on startup
-vim.cmd([[autocmd VimEnter * Copilot disable]])
+-- set generic text dimensions
+vim.opt_local.wrap = true
+vim.opt_local.textwidth = 80
+
+-- register uncommon file types
+vim.filetype.add({ extension = { eta = "eta" }})
+vim.filetype.add({ extension = { gohtml = "gotmpl" }})
+vim.filetype.add({ extension = { gotext = "gotexttmpl" }})
+vim.filetype.add({ extension = { mod = "gomod" }})
+vim.filetype.add({ extension = { sum = "gosum" }})
+vim.filetype.add({ extension = { gowork = "gowork" }})
 
 -- load plugins folder with lazy.nvim
 require("lazy").setup("plugins", {
