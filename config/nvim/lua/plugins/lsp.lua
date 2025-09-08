@@ -113,7 +113,7 @@ return {
 				"html",
 				filetypes = {
 					"html",
-					"templ",
+					"eta",
 					"gotmpl",
 				},
 				settings = {

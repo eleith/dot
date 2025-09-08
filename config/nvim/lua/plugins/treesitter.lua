@@ -24,6 +24,7 @@ return {
 			"comment",
 			"prisma",
 			"markdown",
+			"markdown_inline",
 			"ruby",
 			"svelte",
 		},
