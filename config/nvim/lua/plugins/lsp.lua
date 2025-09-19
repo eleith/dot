@@ -63,6 +63,7 @@ return {
 			{ "intelephense" },
 			{ "docker_language_server" },
 			{ "jsonls" },
+			{ "lemminx" },
 			{ "pyright" },
 			{ "vimls" },
 			{ "bashls" },
