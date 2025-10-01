@@ -31,6 +31,15 @@ if test -f ~/dev/google-cloud-sdk/path.fish.inc
     source ~/dev/google-cloud-sdk/path.fish.inc
 end
 
+# support gcr with ssh agent
+if set -q SSH_AUTH_SOCK
+    set SSH_AUTH_SOCK_PREVIOUS $SSH_AUTH_SOCK
+    set GCR_SSH_SOCK /run/user/(id -u)/gcr/ssh
+    if test -S $GCR_SSH_SOCK
+        set -x SSH_AUTH_SOCK $GCR_SSH_SOCK
+    end
+end
+
 if type -q fzf
     set -gx FZF_DEFAULT_OPTS "
 --preview-window=:hidden
