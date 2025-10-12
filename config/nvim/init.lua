@@ -70,21 +70,9 @@ augroup END]])
 
 vim.opt.completeopt = "menuone,noselect"
 
--- https://github.com/neovim/neovim/issues/17070#issuecomment-1086775760
-if vim.env.TERM == "tmux-256color" then
-	vim.uv.fs_write(2, "\27Ptmux;\27\27]11;?\7\27\\", -1, nil)
-end
-
 -- set generic text dimensions
 vim.opt_local.wrap = true
 vim.opt_local.textwidth = 80
-
--- register uncommon file types
-vim.filetype.add({ extension = { gohtml = "gotmpl" }})
-vim.filetype.add({ extension = { gotext = "gotexttmpl" }})
-vim.filetype.add({ extension = { mod = "gomod" }})
-vim.filetype.add({ extension = { sum = "gosum" }})
-vim.filetype.add({ extension = { gowork = "gowork" }})
 
 -- load plugins folder with lazy.nvim
 require("lazy").setup("plugins", {

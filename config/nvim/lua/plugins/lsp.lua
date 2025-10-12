@@ -54,8 +54,6 @@ return {
 			})
 		end
 
-		--vim.lsp.enable("docker_language_server")
-
 		local servers = {
 			{ "ts_ls" },
 			{ "tailwindcss" },
@@ -111,23 +109,18 @@ return {
 			{ "stylelint_lsp" },
 			{ "svelte" },
 			{
-				"html",
+				"superhtml",
 				filetypes = {
 					"html",
-					"eta",
-					"gotmpl",
 				},
-				settings = {
-					html = {
-						hover = {
-							documentation = true,
-							references = true,
-						},
-					},
-					css = {
-						validate = true,
-					},
-				},
+				cmd = function(dispatchers)
+					local buf_name = vim.api.nvim_buf_get_name(0)
+					if string.match(buf_name, "%.html$") then
+						return vim.lsp.rpc.start({ 'superhtml', 'lsp' }, dispatchers)
+					else
+						return vim.lsp.rpc.start({ 'superhtml', 'lsp', '--syntax-only' }, dispatchers)
+					end
+				end,
 			},
 			{ "cssls" },
 			{
@@ -135,7 +128,6 @@ return {
 				filetypes = {
 					"lua",
 					"fish",
-					"html",
 					"javascript",
 					"typescript",
 					"javascriptreact",
@@ -181,9 +173,6 @@ return {
 							require("efmls-configs.formatters.prettier"),
 						},
 						gotmpl = {
-							require("efmls-configs.formatters.prettier"),
-						},
-						html = {
 							require("efmls-configs.formatters.prettier"),
 						},
 						javascript = {
@@ -249,8 +238,8 @@ return {
 				end
 			end
 
-			vim.lsp.enable(server[1])
 			vim.lsp.config(server[1], setup_config)
+			vim.lsp.enable(server[1])
 		end
 	end,
 }
