@@ -20,9 +20,8 @@ if test -d ~/.cargo/bin
     set PATH "$HOME/.cargo/bin" $PATH
 end
 
-# load up asdf completions
-if test -f ~/.asdf/asdf.fish
-    source ~/.asdf/asdf.fish
+if type -q mise
+	mise activate fish | source
 end
 
 # load up gcloud completions
