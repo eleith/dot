@@ -10,16 +10,6 @@ if test -d ~/.local/bin
     set PATH "$HOME/.local/bin" $PATH
 end
 
-# add go binaries to path
-if test -d ~/.go
-    set PATH "$HOME/.go/bin" $PATH
-end
-
-# add rust binaries to path
-if test -d ~/.cargo/bin
-    set PATH "$HOME/.cargo/bin" $PATH
-end
-
 if type -q mise
 	mise activate fish | source
 end

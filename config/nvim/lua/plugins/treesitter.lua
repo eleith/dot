@@ -26,7 +26,9 @@ return {
 			"markdown",
 			"markdown_inline",
 			"ruby",
+			"rust",
 			"svelte",
+			"toml",
 		},
 		indent = {
 			enable = true,

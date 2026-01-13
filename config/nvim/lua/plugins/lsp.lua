@@ -57,7 +57,6 @@ return {
 		local servers = {
 			{ "ts_ls" },
 			{ "tailwindcss" },
-			{ "graphql" },
 			{ "intelephense" },
 			{ "docker_language_server" },
 			{ "jsonls" },
@@ -85,7 +84,7 @@ return {
 					filetypes = { "go", "gomod" },
 					init_options = {
 						command = {
-							"golangci-lint", "run", "--output.json..path=stdout", "--show-stats=false"
+							"golangci-lint", "run", "--output.json.path", "stdout", "--show-stats", "false", "--issues-exit-code=1"
 						}
 					},
 					root_markers = {
@@ -104,6 +103,29 @@ return {
 							"/.woodpecker",
 						},
 					},
+				},
+			},
+			{
+				"rust-analyzer",
+				filetypes = {
+					"rust",
+				},
+				cmd = {
+					vim.fn.expand("~/.cargo/bin/rust-analyzer"),
+				},
+				imports = {
+					granularity = {
+						group = "module",
+					},
+					prefix = "self",
+				},
+				cargo = {
+					buildScripts = {
+						enable = true
+					},
+				},
+				procMacro = {
+					enable = true
 				},
 			},
 			{ "stylelint_lsp" },
@@ -136,6 +158,7 @@ return {
 					"typescript.tsx",
 					"markdown",
 					"eruby",
+					"rust",
 					"yaml",
 					"svelte",
 				},
@@ -196,6 +219,9 @@ return {
 						markdown = {
 							require("efmls-configs.linters.markdownlint"),
 							require("efmls-configs.formatters.prettier"),
+						},
+						rust = {
+							require('efmls-configs.formatters.rustfmt')
 						},
 						svelte = {
 							require("efmls-configs.formatters.prettier"),
