@@ -81,8 +81,11 @@ return {
 			{ "eslint" },
 			{
 				"yamlls",
+				filetypes = { "yaml", "markdown" },
+				root_markers = { ".git", ".luzzle" },
 				settings = {
 					yaml = {
+						validate = true,
 						schemas = {
 							["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
 							["https://raw.githubusercontent.com/woodpecker-ci/woodpecker/master/pipeline/schema/schema.json"] =
