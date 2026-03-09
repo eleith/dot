@@ -84,7 +84,7 @@ return {
 		{ "<leader>sD",      function() Snacks.picker.diagnostics_buffer() end,                      desc = "Buffer Diagnostics" },
 		{ "<leader>sh",      function() Snacks.picker.help() end,                                    desc = "Help Pages" },
 		{ "<leader>sH",      function() Snacks.picker.highlights() end,                              desc = "Highlights" },
-		{ "<leader>si",      function() Snacks.picker.icons() end,                                   desc = "Icons" },
+		{ "<leader>se",      function() Snacks.picker.icons() end,                                   desc = "Icons" },
 		{ "<leader>sj",      function() Snacks.picker.jumps() end,                                   desc = "Jumps" },
 		{ "<leader>sk",      function() Snacks.picker.keymaps() end,                                 desc = "Keymaps" },
 		{ "<leader>sl",      function() Snacks.picker.loclist() end,                                 desc = "Location List" },
@@ -103,6 +103,8 @@ return {
 		{ "gy",              function() Snacks.picker.lsp_type_definitions() end,                    desc = "Goto T[y]pe Definition" },
 		{ "<leader>ss",      function() Snacks.picker.lsp_symbols() end,                             desc = "LSP Symbols" },
 		{ "<leader>sS",      function() Snacks.picker.lsp_workspace_symbols() end,                   desc = "LSP Workspace Symbols" },
+		{ "<leader>si",      function() Snacks.picker.lsp_incoming_calls() end,                      desc = "LSP Incoming Calls" },
+		{ "<leader>so",      function() Snacks.picker.lsp_outgoing_calls() end,                      desc = "LSP Outgoing Calls" },
 		-- Other
 		{ "<leader>z",       function() Snacks.zen() end,                                            desc = "Toggle Zen Mode" },
 		{ "<leader>Z",       function() Snacks.zen.zoom() end,                                       desc = "Toggle Zoom" },
@@ -147,7 +149,6 @@ return {
 				Snacks.toggle.inlay_hints():map("<leader>uh")
 				Snacks.toggle.indent():map("<leader>ug")
 				Snacks.toggle.dim():map("<leader>uD")
-
 			end,
 		})
 	end,
