@@ -80,8 +80,15 @@ return {
 			{ "golangci_lint_ls" },
 			{ "eslint" },
 			{
+				"luzzle_lsp",
+				cmd = { 'luzzle-lsp', '--stdio' },
+				filetypes = { 'markdown' },
+				root_markers = { '.luzzle' },
+				single_file_support = false,
+			},
+			{
 				"yamlls",
-				filetypes = { "yaml", "markdown" },
+				filetypes = { "yaml" },
 				root_markers = { ".git", ".luzzle" },
 				settings = {
 					yaml = {
