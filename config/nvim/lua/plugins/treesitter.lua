@@ -1,9 +1,14 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
+	branch = "main", -- Forces the rewrite branch
 	build = ":TSUpdate",
-	event = "BufReadPost",
-	opts = {
-		ensure_installed = {
+	event = { "BufReadPre", "BufNewFile" },
+	dependencies = {
+		"nvim-treesitter/nvim-treesitter-textobjects",
+		"MeanderingProgrammer/treesitter-modules.nvim",
+	},
+	config = function()
+		local languages = {
 			"bash",
 			"c",
 			"css",
@@ -29,31 +34,32 @@ return {
 			"rust",
 			"svelte",
 			"toml",
-		},
-		indent = {
-			enable = true,
-		},
-		context_commentstring = {
-			enable = true,
-			enable_autocmd = false,
-		},
-		incremental_selection = {
-			enable = true,
-			keymaps = {
-				init_selection = "<C-space>",
-				node_incremental = "<C-space>",
-				scope_incremental = "<nop>",
-				node_decremental = "<bs>",
+		}
+
+		-- Covers ensure_installed + highlight + indent + fold + incremental selection
+		local ts = require("treesitter-modules")
+		ts.setup({
+			ensure_installed = languages,
+			ignore_install = {},
+			sync_install = false,
+			auto_install = false,
+
+			highlight = {
+				enable = true,
 			},
-		},
-		highlight = {
-			enable = true,
-			disable = function(_, buf)
-				return vim.api.nvim_buf_line_count(buf) > 50000
-			end,
-		},
-	},
-	config = function(_, opts)
-		require("nvim-treesitter.configs").setup(opts)
+			indent = {
+				enable = true,
+			},
+		})
+
+		-- textobjects plugin now uses its own setup + keymaps
+		require("nvim-treesitter-textobjects").setup({
+			move = {
+				set_jumps = false,
+			},
+			select = {
+				lookahead = true,
+			},
+		})
 	end,
 }
