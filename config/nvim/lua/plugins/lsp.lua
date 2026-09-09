@@ -66,6 +66,7 @@ return {
 			{ "bashls" },
 			{ "marksman" },
 			{ "fish_lsp" },
+			{ "tombi" },
 			{
 				"ruby_lsp",
 				settings = {
