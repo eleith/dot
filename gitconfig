@@ -1,5 +1,6 @@
 [user]
 	name = eleith
+	email = eleith@noreply.git.eleith.com
 [init]
 	defaultBranch = main
 [difftool]
