@@ -1,0 +1,76 @@
+{
+  "$schema": "../profile.schema.json",
+	"meta": {
+		"name": "base",
+		"version": "1.0.0",
+		"description": "my personal base agent sandbox",
+		"author": "eleith"
+	},
+	"session_hooks": {
+		"before": {
+			"script": "$HOME/.config/nono/hooks/start.sh"
+		},
+		"after": {
+			"script": "$HOME/.config/nono/hooks/stop.sh"
+		}
+	},
+	"filesystem": {
+		"allow": [
+			"/tmp",
+			"~/.local/share/nvim",
+			"~/.local/state/nvim",
+			"/dev/ptmx",
+			"/dev/pty"
+		],
+		"read": [
+			"~/.config/nvim",
+			"~/.config/mise",
+			"~/.cache/mise",
+			"~/.local/bin",
+			"~/.local/share/mise",
+			"/run/nscd/socket"
+		],
+		"read_file": [
+			"/etc/passwd",
+			"/etc/group",
+			"/etc/nsswitch.conf",
+			"~/.gitconfig",
+			"~/.mise.toml",
+			"~/.tool-versions",
+			"~/.ssh/known_hosts"
+		],
+		"write": [],
+		"write_file": [],
+		"deny": [
+			"~/.ssh",
+			"~/.gnupg"
+		],
+		"bypass_protection": [],
+		"suppress_save_prompt": [
+			"/"
+		]
+	},
+	"environment": {
+		"allow_vars": [
+			"HOME",
+			"LANG",
+			"PATH",
+			"SHELL",
+			"SSH_AUTH_SOCK",
+			"TERM",
+			"USER",
+			"DBUS_SESSION_BUS_ADDRESS"
+		],
+		"deny_vars": [],
+		"case_insensitive_vars": false,
+		"set_vars": {
+			"EDITOR": "nvim",
+			"SHELL": "~/.local/bin/agent-bash",
+			"SSH_AUTH_SOCK": "/tmp/nono-session/ssh.sock",
+			"DBUS_SESSION_BUS_ADDRESS": "unix:path=/tmp/nono-session/dbus.sock"
+		}
+	},
+	"workdir": {
+		"access": "readwrite"
+	}
+}

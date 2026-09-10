@@ -1,0 +1,21 @@
+{
+  "$schema": "../profile.schema.json",
+  "meta": {
+    "name": "gitea",
+    "description": "Gitea API credential injector"
+  },
+  "network": {
+    "credentials": [
+      "gitea"
+    ],
+    "custom_credentials": {
+      "gitea": {
+        "upstream": "https://git.eleith.com",
+        "credential_key": "gitea",
+        "env_var": "GITEA_API_KEY",
+        "inject_header": "Authorization",
+        "credential_format": "token {}"
+      }
+    }
+  }
+}
