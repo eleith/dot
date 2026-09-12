@@ -84,8 +84,8 @@ return {
 				"luzzle_lsp",
 				cmd = { 'luzzle-lsp', '--stdio' },
 				filetypes = { 'markdown' },
-				root_markers = { '.luzzle' },
-				single_file_support = false,
+				root_markers = { ".luzzle" },
+				workspace_required = true,
 			},
 			{
 				"yamlls",
