@@ -4,3 +4,4 @@ bell-features = audio,system
 bell-audio-path = /usr/share/sounds/freedesktop/stereo/bell.oga
 copy-on-select = clipboard
 mouse-hide-while-typing = true
+desktop-notifications = true
