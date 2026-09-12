@@ -10,8 +10,14 @@ changes into this repo so that i can share them with others
 
 ## tools
 
-i use [fish](https://fishshell.com/), [tmux](https://github.com/tmux/tmux/wiki),
-[nvim](https://neovim.io/), [mise](https://mise.jdx.dev) and [wezterm](https://wezfurlong.org/wezterm/)
+i'm using
+
+* [fish](https://fishshell.com/) (4.8.1)
+* [tmux](https://github.com/tmux/tmux/wiki) (3.7c)
+* [nvim](https://neovim.io/) (0.12.1)
+* [mise](https://mise.jdx.dev) (2026.9.5)
+* [nono](https://nono.sh) (0.76.0)
+* [ghostty](https://ghostty.org) (1.3.1)
 
 ## colorscheme
 
