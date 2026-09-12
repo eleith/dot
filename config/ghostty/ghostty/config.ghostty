@@ -1,0 +1,6 @@
+theme = dark:Gruvbox Material Dark,light:Gruvbox Material Light
+font-family = "JetBrainsMono Nerd Font"
+bell-features = audio,system
+bell-audio-path = /usr/share/sounds/freedesktop/stereo/bell.oga
+copy-on-select = clipboard
+mouse-hide-while-typing = true
