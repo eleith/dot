@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Ensure standard user tool locations are available
+export PATH="/usr/local/bin:/usr/bin:/bin:${HOME}/.local/bin:${PATH}"
+
 # ==============================================================================
 # Configuration & Constants
 # ==============================================================================
@@ -38,17 +41,18 @@ acquire_lock() {
 
 release_lock() {
   flock -u 200
+  exec 200>&-
 }
 
 increment_refcount() {
   local count=0
   if [[ -f "$REF_FILE" ]]; then
     count=$(cat "$REF_FILE" 2>/dev/null || echo 0)
+    [[ "$count" =~ ^[0-9]+$ ]] || count=0
   fi
   echo "$((count + 1))" > "$REF_FILE"
 }
 
-# Checks that both the PID is alive and the socket file exists
 is_service_running() {
   local pid_file="$1"
   local sock_file="$2"
@@ -57,6 +61,21 @@ is_service_running() {
   [[ -f "$pid_file" && -S "$sock_file" ]] || return 1
   pid=$(cat "$pid_file" 2>/dev/null || true)
   [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null
+}
+
+wait_for_socket() {
+  local sock_file="$1"
+  local timeout_ms="${2:-1000}"
+  local elapsed=0
+
+  while [[ ! -S "$sock_file" ]]; do
+    if (( elapsed >= timeout_ms )); then
+      return 1
+    fi
+    sleep 0.05
+    elapsed=$((elapsed + 50))
+  done
+  return 0
 }
 
 # ==============================================================================
@@ -77,43 +96,59 @@ setup_dbus_proxy() {
     return 0
   fi
 
-  rm -f "$sock_file"
-  xdg-dbus-proxy "$real_host_bus" "$sock_file" \
-    --talk="org.freedesktop.Notifications" &> "$log_file" &
+  rm -f "$sock_file" "$pid_file"
+  # Disassociate stdout/stderr and close lock FD 200
+  nohup xdg-dbus-proxy "$real_host_bus" "$sock_file" \
+    --talk="org.freedesktop.Notifications" 200>&- &> "$log_file" &
   echo $! > "$pid_file"
+  disown $!
 
-  for _ in {1..20}; do
-    [[ -S "$sock_file" ]] && return 0
-    sleep 0.05
-  done
-
-  log_warn "Timed out waiting for D-Bus socket at ${sock_file}"
+  if ! wait_for_socket "$sock_file" 1000; then
+    log_warn "Timed out waiting for D-Bus socket at ${sock_file}"
+  fi
 }
 
 setup_ssh_bridge() {
   local pid_file="${SESSION_DIR}/ssh.pid"
   local sock_file="${SESSION_DIR}/ssh.sock"
+  local mode_file="${SESSION_DIR}/ssh.mode"
+  local log_file="${SESSION_DIR}/ssh-bridge.log"
 
+  local target_mode="blackhole"
+  [[ -S "$BW_SOCK" ]] && target_mode="bitwarden"
+
+  # Restart service if target mode changed (e.g. Bitwarden became available)
   if is_service_running "$pid_file" "$sock_file"; then
-    return 0
+    local current_mode
+    current_mode=$(cat "$mode_file" 2>/dev/null || echo "")
+    if [[ "$current_mode" == "$target_mode" ]]; then
+      return 0
+    fi
+    kill "$(cat "$pid_file")" 2>/dev/null || true
   fi
 
-  rm -f "$sock_file"
+  rm -f "$sock_file" "$pid_file"
 
-  # 1. Check for socat
   if ! command -v socat &>/dev/null; then
-    log_warn "'socat' is not installed. SSH forwarding disabled (cannot create socket)."
+    log_warn "'socat' is not installed. SSH forwarding disabled."
     return 0
   fi
 
-  # 2. Check for Bitwarden upstream
-  if [[ -S "$BW_SOCK" ]]; then
-    socat UNIX-LISTEN:"$sock_file",fork,unlink-early,mode=600 UNIX-CONNECT:"$BW_SOCK" &
-    echo $! > "$pid_file"
+  if [[ "$target_mode" == "bitwarden" ]]; then
+    nohup socat UNIX-LISTEN:"$sock_file",fork,unlink-early,mode=600 UNIX-CONNECT:"$BW_SOCK" \
+      200>&- </dev/null &> "$log_file" &
   else
     log_warn "Bitwarden socket not found at ${BW_SOCK}. Serving dummy blackhole socket."
-    socat UNIX-LISTEN:"$sock_file",fork,unlink-early,mode=600 EXEC:/bin/true &
-    echo $! > "$pid_file"
+    nohup socat UNIX-LISTEN:"$sock_file",fork,unlink-early,mode=600 EXEC:/bin/true \
+      200>&- </dev/null &> "$log_file" &
+  fi
+
+  echo $! > "$pid_file"
+  echo "$target_mode" > "$mode_file"
+  disown $!
+
+  if ! wait_for_socket "$sock_file" 1000; then
+    log_warn "Timed out waiting for SSH bridge socket at ${sock_file}"
   fi
 }
 

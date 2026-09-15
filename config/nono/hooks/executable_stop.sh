@@ -18,12 +18,14 @@ acquire_lock() {
 
 release_lock() {
   flock -u 200
+  exec 200>&-
 }
 
 decrement_refcount() {
   local count=1
   if [[ -f "$REF_FILE" ]]; then
     count=$(cat "$REF_FILE" 2>/dev/null || echo 1)
+    [[ "$count" =~ ^[0-9]+$ ]] || count=1
   fi
 
   count=$((count - 1))
@@ -41,16 +43,13 @@ terminate_pid_file() {
   pid=$(cat "$pid_file" 2>/dev/null || true)
 
   if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
-    # Graceful shutdown first
     kill "$pid" 2>/dev/null || true
 
-    # Poll up to 0.5s for clean exit
     for _ in {1..10}; do
       kill -0 "$pid" 2>/dev/null || break
       sleep 0.05
     done
 
-    # Force kill if process failed to terminate
     if kill -0 "$pid" 2>/dev/null; then
       kill -9 "$pid" 2>/dev/null || true
     fi
@@ -65,10 +64,10 @@ teardown_all_services() {
 }
 
 cleanup_session_artifacts() {
-  # Clean up ephemeral runtime files while leaving the directory and lock intact
   rm -f "${SESSION_DIR}"/*.sock \
         "${SESSION_DIR}"/*.pid \
         "${SESSION_DIR}"/*.log \
+        "${SESSION_DIR}"/*.mode \
         "$REF_FILE"
 }
 
@@ -76,7 +75,6 @@ cleanup_session_artifacts() {
 # Main
 # ==============================================================================
 main() {
-  # Short-circuit if session or lock file does not exist
   [[ -d "$SESSION_DIR" && -f "$LOCK_FILE" ]] || exit 0
 
   acquire_lock
