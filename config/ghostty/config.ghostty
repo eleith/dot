@@ -1,4 +1,4 @@
-theme = dark:Gruvbox Material Dark,light:Gruvbox Material Light
+theme = dark:Modus Vivendi Tinted,light:Modus Operandi Tinted
 font-family = "JetBrainsMono Nerd Font"
 bell-features = audio,system
 bell-audio-path = /usr/share/sounds/freedesktop/stereo/bell.oga
