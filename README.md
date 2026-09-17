@@ -2,11 +2,12 @@
 
 these [dot
 files](https://en.wikipedia.org/wiki/Hidden_file_and_hidden_directory) are
-extracted from my own private repo managed by [chezmoi](https://www.chezmoi.io/)
-and [gitea](https://gitea.io)
+extracted from my private dotfiles repo.
 
-i self-host [woodpecker ci](https://woodpecker-ci.org/) to monitor and extract
-changes into this repo so that i can share them with others
+with a self-hosted pipeline from [gitea](https://gitea.io),
+[chezmoi](https://www.chezmoi.io/) and [woodpecker
+ci](https://woodpecker-ci.org/), my dotfiles are monitored, extracted and pushed
+into this repo so that i can share them with others.
 
 ## tools
 
@@ -18,7 +19,8 @@ i'm using
 * [mise](https://mise.jdx.dev) (2026.9.5)
 * [nono](https://nono.sh) (0.76.0)
 * [ghostty](https://ghostty.org) (1.3.1)
+* [cosmic](https://system76.com/cosmic/download)
 
 ## colorscheme
 
-i like [gruvbox](https://github.com/gruvbox-community/gruvbox)
+i use [modus](https://github.com/protesilaos/modus-themes)
