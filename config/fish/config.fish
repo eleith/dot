@@ -23,7 +23,7 @@ if set -q SSH_AUTH_SOCK
     end
 end
 
-fish_config theme choose gruvbox
+fish_config theme choose modus-tinted
 
 # set keybindings
 bind \cB beginning-of-line
