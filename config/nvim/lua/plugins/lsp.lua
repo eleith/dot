@@ -182,9 +182,6 @@ return {
 								formatStdin = true,
 							}
 						},
-						lua = {
-							require("efmls-configs.linters.luacheck"),
-						},
 						fish = {
 							require("efmls-configs.linters.fish"),
 							require("efmls-configs.formatters.fish_indent"),
