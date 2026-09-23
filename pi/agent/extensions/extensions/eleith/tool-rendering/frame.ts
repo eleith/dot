@@ -30,10 +30,6 @@ export function frameTop(title: string, status: FrameStatus, theme: Theme, width
 	return `${border("──")} ${fittedTitle} ${border("─".repeat(trailingWidth))}`;
 }
 
-export function frameBottom(status: FrameStatus, theme: Theme, width: number): string {
-	return borderPainter(status, theme)("─".repeat(Math.max(1, width)));
-}
-
 export function frameBottomWithLabel(label: string, status: FrameStatus, theme: Theme, width: number): string {
 	const border = borderPainter(status, theme);
 	const safeWidth = Math.max(1, width);
@@ -45,18 +41,22 @@ export function frameBottomWithLabel(label: string, status: FrameStatus, theme: 
 	return `${border("─".repeat(fillWidth))} ${fittedLabel} ${border("─".repeat(trailingBorderWidth))}`;
 }
 
-export function frameResult(body: string, status: FrameStatus, theme: Theme, width: number): string {
-	const lines = body ? frameBody(body, width) : [];
-	return [...lines, frameBottom(status, theme, width)].join("\n");
-}
-
 export function frameResultWithBottomLabel(body: string, label: string, status: FrameStatus, theme: Theme, width: number): string {
 	const lines = body ? frameBody(body, width) : [];
 	return [...lines, frameBottomWithLabel(label, status, theme, width)].join("\n");
 }
 
-export function frameError(message: string, theme: Theme, width: number): string {
-	return frameResult(theme.fg("error", message), "error", theme, width);
+/** Keep presentation state in the frame, separate from tool output. */
+export function resultLabel(summary: string, expanded: boolean, hidden: number, theme: Theme): string {
+	const view = theme.fg("muted", expanded ? "expanded" : hidden ? `collapsed · ${hidden} hidden` : "collapsed");
+	return summary ? `${summary}${theme.fg("dim", " · ")}${view}` : view;
+}
+
+export function frameToolError(message: string, expanded: boolean, theme: Theme, width: number): string {
+	const lines = (message || "Error").replace(/\r?\n$/, "").split("\n");
+	const shown = expanded ? lines : lines.slice(0, 5);
+	const hidden = lines.length - shown.length;
+	return frameResultWithBottomLabel(theme.fg("error", shown.join("\n")), resultLabel(theme.fg("error", "✗ error"), expanded, hidden, theme), "error", theme, width);
 }
 
 export function formatDuration(ms: number): string {

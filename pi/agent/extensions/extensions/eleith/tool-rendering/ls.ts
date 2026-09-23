@@ -6,9 +6,9 @@ import {
 	type LsToolInput,
 } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
-import { defaultFrameWidth, frameError, frameResultWithBottomLabel, frameStatus, frameTop } from "./frame.ts";
+import { defaultFrameWidth, frameResultWithBottomLabel, frameStatus, frameToolError, frameTop, resultLabel } from "./frame.ts";
 import { normalizeLineEndings, textFromResult } from "./tool-result.ts";
-import { moreLines, previewLines } from "./preview.ts";
+import { previewLines } from "./preview.ts";
 import { isToolChromeEnabled } from "./state.ts";
 
 type BuiltinLsTool = ReturnType<typeof createLsToolDefinition>;
@@ -27,14 +27,14 @@ export function registerLsRendering(pi: ExtensionAPI, cwd: string): void {
 
 	const renderCall: LsRenderCall = (args, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderCall) return original.renderCall(args, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(frameTop(lsTitle(args, theme), frameStatus(context), theme, defaultFrameWidth()));
 		return component;
 	};
 
 	const renderResult: LsRenderResult = (result, options, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderResult) return original.renderResult(result, options, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(renderLsResult(result as AgentToolResult<LsDisplayDetails>, options.expanded, theme, context));
 		return component;
 	};
@@ -71,17 +71,16 @@ function renderLsResult(
 ): string {
 	const status = frameStatus(context);
 	const width = defaultFrameWidth();
-	if (context.isError) return frameError(textFromResult(result) || "Error", theme, width);
+	if (context.isError) return frameToolError(textFromResult(result), expanded, theme, width);
 
 	const text = result.details?.rendering?.text ?? textFromResult(result);
 	const lines = text.trim() === "(empty directory)"
 		? []
 		: text.split("\n").filter((line) => line.trim().length > 0);
 	const { shown, hidden } = previewLines(lines, expanded, 10);
-	const rendered = lines.length > 0 ? renderEntries(shown, theme) : theme.fg("dim", "(empty)");
-	const body = hidden ? `${rendered}\n${moreLines(hidden, theme, "entries")}` : rendered;
+	const body = renderEntries(shown, theme);
 	const limit = result.details?.entryLimitReached ? " · limit reached" : "";
-	return frameResultWithBottomLabel(body, `${lines.length} entries${limit}`, status, theme, width);
+	return frameResultWithBottomLabel(body, resultLabel(`${lines.length} entries${limit}`, expanded, hidden, theme), status, theme, width);
 }
 
 function renderEntries(lines: string[], theme: LsTheme): string {

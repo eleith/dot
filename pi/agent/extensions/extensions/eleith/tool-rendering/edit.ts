@@ -6,8 +6,9 @@ import {
 	type ExtensionAPI,
 } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
-import { defaultFrameWidth, frameError, frameResultWithBottomLabel, frameStatus, frameTop } from "./frame.ts";
+import { defaultFrameWidth, frameResultWithBottomLabel, frameStatus, frameToolError, frameTop, resultLabel } from "./frame.ts";
 import { normalizeLineEndings, textFromResult } from "./tool-result.ts";
+import { previewLines } from "./preview.ts";
 import { isToolChromeEnabled } from "./state.ts";
 
 type BuiltinEditTool = ReturnType<typeof createEditToolDefinition>;
@@ -56,25 +57,24 @@ function renderEditResult(
 ): string {
 	const status = frameStatus(context);
 	const width = defaultFrameWidth();
-	if (context.isError) return frameError(textFromResult(result) || "Error", theme, width);
+	if (context.isError) return frameToolError(textFromResult(result), expanded, theme, width);
 
 	const diff = normalizeLineEndings(result.details?.diff || result.details?.patch || textFromResult(result));
 	const stats = diffStats(diff);
-	const label = `${stats.added > 0 ? `+${stats.added}` : "+0"} ${stats.removed > 0 ? `-${stats.removed}` : "-0"}`;
-	const body = expanded ? renderDiff(diff, theme) : theme.fg("dim", "(expand tool output to view diff)");
-	return frameResultWithBottomLabel(body, label, status, theme, width);
+	const label = `+${stats.added} -${stats.removed}`;
+	const lines = diff.replace(/\n$/, "").split("\n")
+		.filter((line) => line && !line.startsWith("***") && !line.startsWith("---") && !line.startsWith("+++"));
+	const { shown, hidden } = previewLines(lines, expanded, 8);
+	return frameResultWithBottomLabel(renderDiff(shown, theme), resultLabel(label, expanded, hidden, theme), status, theme, width);
 }
 
-function renderDiff(diff: string, theme: EditTheme): string {
-	return diff.split("\n")
-		.filter((line) => !line.startsWith("***") && !line.startsWith("---") && !line.startsWith("+++"))
-		.map((line) => {
-			if (line.startsWith("+")) return theme.fg("toolDiffAdded", line);
-			if (line.startsWith("-")) return theme.fg("toolDiffRemoved", line);
-			if (line.startsWith("@@")) return theme.fg("muted", line);
-			return theme.fg("toolDiffContext", line);
-		})
-		.join("\n");
+function renderDiff(lines: string[], theme: EditTheme): string {
+	return lines.map((line) => {
+		if (line.startsWith("+")) return theme.fg("toolDiffAdded", line);
+		if (line.startsWith("-")) return theme.fg("toolDiffRemoved", line);
+		if (line.startsWith("@@")) return theme.fg("muted", line);
+		return theme.fg("toolDiffContext", line);
+	}).join("\n");
 }
 
 function diffStats(diff: string): { added: number; removed: number } {

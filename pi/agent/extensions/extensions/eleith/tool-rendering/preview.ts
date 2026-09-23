@@ -9,3 +9,4 @@ export function previewLines<T>(lines: T[], expanded: boolean, limit: number): {
 export function moreLines(hidden: number, theme: Theme, noun = "lines"): string {
 	return theme.fg("muted", `… ${hidden} more ${noun} (expand tool output to view)`);
 }
+

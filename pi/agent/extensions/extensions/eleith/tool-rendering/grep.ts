@@ -8,13 +8,13 @@ import {
 import { Text } from "@earendil-works/pi-tui";
 import {
 	defaultFrameWidth,
-	frameError,
 	frameResultWithBottomLabel,
 	frameStatus,
+	frameToolError,
 	frameTop,
+	resultLabel,
 } from "./frame.ts";
 import { normalizeLineEndings, textFromResult } from "./tool-result.ts";
-import { moreLines } from "./preview.ts";
 import { isToolChromeEnabled } from "./state.ts";
 
 type BuiltinGrepTool = ReturnType<typeof createGrepToolDefinition>;
@@ -34,14 +34,14 @@ export function registerGrepRendering(pi: ExtensionAPI, cwd: string): void {
 
 	const renderCall: GrepRenderCall = (args, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderCall) return original.renderCall(args, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(frameTop(grepTitle(args, theme), frameStatus(context), theme, defaultFrameWidth()));
 		return component;
 	};
 
 	const renderResult: GrepRenderResult = (result, options, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderResult) return original.renderResult(result, options, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(renderGrepResult(result as AgentToolResult<GrepDisplayDetails>, options.expanded, theme, context));
 		return component;
 	};
@@ -81,7 +81,7 @@ function renderGrepResult(
 ): string {
 	const status = frameStatus(context);
 	const width = defaultFrameWidth();
-	if (context.isError) return frameError(textFromResult(result) || "Error", theme, width);
+	if (context.isError) return frameToolError(textFromResult(result), expanded, theme, width);
 
 	const details = result.details?.rendering;
 	const text = details?.text ?? textFromResult(result);
@@ -89,18 +89,15 @@ function renderGrepResult(
 	const matches = lines.filter(isMatchLine);
 	const limit = result.details?.matchLimitReached ? " · limit reached" : "";
 	const truncated = result.details?.truncation?.truncated || result.details?.linesTruncated ? " · truncated" : "";
-	if (matches.length === 0) return frameResultWithBottomLabel(theme.fg("dim", "(no matches)"), `0 matches${limit}${truncated}`, status, theme, width);
+	if (matches.length === 0) return frameResultWithBottomLabel("", resultLabel(`0 matches${limit}${truncated}`, expanded, 0, theme), status, theme, width);
 
 	// Three matches across three files use at most eight grouped lines (headings and spacing included).
 	// Context and truncation notices remain available when expanded, but cannot grow the preview.
 	const shown = expanded ? lines : matches.slice(0, 3);
 	const rendered = renderGroupedMatches(shown.join("\n"), details?.pattern ?? "", theme);
-	const hidden = matches.length - Math.min(matches.length, 3);
-	const hasExtraOutput = lines.length > shown.length;
-	const body = !expanded && hasExtraOutput
-		? `${rendered}\n${hidden ? moreLines(hidden, theme, hidden === 1 ? "match" : "matches") : theme.fg("muted", "… expand tool output to view more")}`
-		: rendered;
-	return frameResultWithBottomLabel(body, `${matches.length} ${matches.length === 1 ? "match" : "matches"}${limit}${truncated}`, status, theme, width);
+	const hidden = expanded ? 0 : lines.length - shown.length;
+	const summary = `${matches.length} ${matches.length === 1 ? "match" : "matches"}${limit}${truncated}`;
+	return frameResultWithBottomLabel(rendered, resultLabel(summary, expanded, hidden, theme), status, theme, width);
 }
 
 function renderGroupedMatches(text: string, pattern: string, theme: GrepTheme): string {

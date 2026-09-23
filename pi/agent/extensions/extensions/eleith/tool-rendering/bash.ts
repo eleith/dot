@@ -9,11 +9,10 @@ import { Text } from "@earendil-works/pi-tui";
 import {
 	defaultFrameWidth,
 	formatDuration,
-	frameError,
-	frameResult,
 	frameResultWithBottomLabel,
 	frameStatus,
 	frameTop,
+	resultLabel,
 } from "./frame.ts";
 import { textFromResult } from "./tool-result.ts";
 import { moreLines, previewLines } from "./preview.ts";
@@ -38,10 +37,10 @@ export function registerBashRendering(pi: ExtensionAPI, cwd: string): void {
 
 	const renderCall: BashRenderCall = (args, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderCall) return original.renderCall(args, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		const status = frameStatus(context);
 		const width = defaultFrameWidth();
-		component.setText(`${frameTop(buildBashTitle(args, theme), status, theme, width)}\n${frameResult(renderCommand(args.command, context.expanded, theme), status, theme, width)}`);
+		component.setText(`${frameTop(buildBashTitle(args, theme), status, theme, width)}\n${renderCommand(args.command, context.expanded, theme)}`);
 		return component;
 	};
 
@@ -100,16 +99,18 @@ function renderBashResult(
 ): string {
 	const status = frameStatus(context);
 	const width = defaultFrameWidth();
-	if (context.isError) return frameError(collapsedBody(textFromResult(result) || "Error", options.expanded, theme), theme, width);
-
-	const timing = updateTiming(context, options);
+	const elapsedMs = updateTiming(context, options);
 	const details = result.details?.rendering;
 	const parsed = parseBashOutput(details?.output ?? textFromResult(result), details?.exitCode ?? null);
-	const body = collapsedBody(parsed.body, options.expanded, theme);
-	const label = bashSummaryLabel(parsed, timing, theme);
-	return label
-		? frameResultWithBottomLabel(body, label, status, theme, width)
-		: frameResult(body, status, theme, width);
+	const { body, hidden } = previewBashOutput(parsed.body, options.expanded);
+	const output = context.isError && body ? theme.fg("error", body) : body;
+	const duration = elapsedMs === undefined ? "" : theme.fg("dim", formatDuration(elapsedMs));
+	const runStatus = options.isPartial
+		? theme.fg("warning", body ? "running" : "running · no output yet")
+		: bashSummaryLabel(parsed, theme) || (context.isError ? theme.fg("error", "✗ error") : "");
+	const summary = [duration, runStatus].filter(Boolean).join(theme.fg("dim", " · "));
+	const label = resultLabel(summary, options.expanded, hidden, theme);
+	return frameResultWithBottomLabel(output, label, status, theme, width);
 }
 
 interface ParsedBashOutput {
@@ -132,11 +133,7 @@ function parseBashOutput(output: string, fallbackExitCode: number | null): Parse
 	};
 }
 
-interface TimingSnapshot {
-	readonly elapsedMs: number | undefined;
-}
-
-function updateTiming(context: BashRenderContext, options: BashRenderOptions): TimingSnapshot {
+function updateTiming(context: BashRenderContext, options: BashRenderOptions): number | undefined {
 	const state = context.state;
 	if (context.executionStarted && state.startedAt === undefined) {
 		state.startedAt = Date.now();
@@ -155,22 +152,16 @@ function updateTiming(context: BashRenderContext, options: BashRenderOptions): T
 		}
 	}
 
-	return {
-		elapsedMs: state.startedAt === undefined ? undefined : (state.endedAt ?? Date.now()) - state.startedAt,
-	};
+	return state.startedAt === undefined ? undefined : (state.endedAt ?? Date.now()) - state.startedAt;
 }
 
-function bashSummaryLabel(parsed: ParsedBashOutput, timing: TimingSnapshot, theme: BashTheme): string {
-	const duration = timing.elapsedMs === undefined ? "" : theme.fg("dim", formatDuration(timing.elapsedMs));
-	let status = "";
-	if (parsed.timedOut) status = theme.fg("warning", "⚡ timed out");
-	else if (parsed.aborted) status = theme.fg("warning", "⚡ aborted");
-	else if (parsed.exitCode !== null) {
-		status = parsed.exitCode === 0
-			? theme.fg("success", "✓ exit 0")
-			: theme.fg("error", `✗ exit ${parsed.exitCode}`);
-	}
-	return [duration, status].filter(Boolean).join(" ");
+function bashSummaryLabel(parsed: ParsedBashOutput, theme: BashTheme): string {
+	if (parsed.timedOut) return theme.fg("warning", "⚡ timed out");
+	if (parsed.aborted) return theme.fg("warning", "⚡ aborted");
+	if (parsed.exitCode === null) return "";
+	return parsed.exitCode === 0
+		? theme.fg("success", "✓ exit 0")
+		: theme.fg("error", `✗ exit ${parsed.exitCode}`);
 }
 
 function renderCommand(command: string, expanded: boolean, theme: BashTheme): string {
@@ -184,9 +175,10 @@ function renderCommand(command: string, expanded: boolean, theme: BashTheme): st
 	return hidden ? `${body}\n${moreLines(hidden, theme)}` : body;
 }
 
-function collapsedBody(body: string, expanded: boolean, theme: BashTheme): string {
-	const lines = body ? body.split("\n") : [];
-	const maxLines = 5;
-	if (expanded || lines.length <= maxLines) return body;
-	return [theme.fg("muted", `… ${lines.length - maxLines} earlier lines (expand tool output to view)`), ...lines.slice(-maxLines)].join("\n");
+function previewBashOutput(body: string, expanded: boolean): { body: string; hidden: number } {
+	// A final newline terminates the last output line; it isn't another blank line.
+	const displayBody = body.replace(/\r?\n$/, "");
+	const lines = displayBody ? displayBody.split("\n") : [];
+	const hidden = expanded ? 0 : Math.max(0, lines.length - 5);
+	return { body: hidden ? lines.slice(-5).join("\n") : displayBody, hidden };
 }

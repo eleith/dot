@@ -7,9 +7,9 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 import { basename, dirname } from "node:path";
-import { defaultFrameWidth, frameError, frameResultWithBottomLabel, frameStatus, frameTop } from "./frame.ts";
+import { defaultFrameWidth, frameResultWithBottomLabel, frameStatus, frameToolError, frameTop, resultLabel } from "./frame.ts";
 import { normalizeLineEndings, textFromResult } from "./tool-result.ts";
-import { moreLines, previewLines } from "./preview.ts";
+import { previewLines } from "./preview.ts";
 import { isToolChromeEnabled } from "./state.ts";
 
 type BuiltinFindTool = ReturnType<typeof createFindToolDefinition>;
@@ -28,14 +28,14 @@ export function registerFindRendering(pi: ExtensionAPI, cwd: string): void {
 
 	const renderCall: FindRenderCall = (args, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderCall) return original.renderCall(args, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(frameTop(findTitle(args, theme), frameStatus(context), theme, defaultFrameWidth()));
 		return component;
 	};
 
 	const renderResult: FindRenderResult = (result, options, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderResult) return original.renderResult(result, options, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(renderFindResult(result as AgentToolResult<FindDisplayDetails>, options.expanded, theme, context));
 		return component;
 	};
@@ -73,7 +73,7 @@ function renderFindResult(
 ): string {
 	const status = frameStatus(context);
 	const width = defaultFrameWidth();
-	if (context.isError) return frameError(textFromResult(result) || "Error", theme, width);
+	if (context.isError) return frameToolError(textFromResult(result), expanded, theme, width);
 
 	const text = result.details?.rendering?.text ?? textFromResult(result);
 	const paths = text.trim() === "No files found matching pattern"
@@ -81,10 +81,9 @@ function renderFindResult(
 		: text.split("\n").filter((line) => line.trim().length > 0);
 	// Three paths in separate directories use at most eight grouped lines.
 	const { shown, hidden } = previewLines(paths, expanded, 3);
-	const rendered = paths.length > 0 ? renderGroupedPaths(shown, theme) : theme.fg("dim", "(no files)");
-	const body = hidden ? `${rendered}\n${moreLines(hidden, theme, "files")}` : rendered;
+	const body = renderGroupedPaths(shown, theme);
 	const limit = result.details?.resultLimitReached ? " · limit reached" : "";
-	return frameResultWithBottomLabel(body, `${paths.length} files${limit}`, status, theme, width);
+	return frameResultWithBottomLabel(body, resultLabel(`${paths.length} files${limit}`, expanded, hidden, theme), status, theme, width);
 }
 
 function renderGroupedPaths(paths: string[], theme: FindTheme): string {

@@ -5,9 +5,9 @@ import {
 	type WriteToolInput,
 } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
-import { defaultFrameWidth, frameError, frameResultWithBottomLabel, frameStatus, frameTop } from "./frame.ts";
+import { defaultFrameWidth, frameResultWithBottomLabel, frameStatus, frameToolError, frameTop, resultLabel } from "./frame.ts";
 import { normalizeLineEndings, textFromResult } from "./tool-result.ts";
-import { moreLines, previewLines } from "./preview.ts";
+import { previewLines } from "./preview.ts";
 import { isToolChromeEnabled } from "./state.ts";
 
 type BuiltinWriteTool = ReturnType<typeof createWriteToolDefinition>;
@@ -26,7 +26,7 @@ export function registerWriteRendering(pi: ExtensionAPI, cwd: string): void {
 
 	const renderCall: WriteRenderCall = (args, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderCall) return original.renderCall(args, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(frameTop(writeTitle(args, theme), frameStatus(context), theme, defaultFrameWidth()));
 		return component;
 	};
@@ -72,24 +72,14 @@ function renderWriteResult(
 ): string {
 	const status = frameStatus(context);
 	const width = defaultFrameWidth();
-	if (context.isError) return frameError(textFromResult(result) || "Error", theme, width);
+	if (context.isError) return frameToolError(textFromResult(result), expanded, theme, width);
 
-	const details = result.details?.rendering;
-	const lineCount = details ? countLines(details.content) : 0;
-	const preview = details ? previewContent(details.content, expanded, theme) : theme.fg("dim", textFromResult(result) || "written");
-	return frameResultWithBottomLabel(preview, `${lineCount} lines`, status, theme, width);
-}
-
-function previewContent(content: string, expanded: boolean, theme: WriteTheme): string {
-	const { shown, hidden } = previewLines(content.split("\n"), expanded, 10);
-	const rendered = shown.map((line, index) => {
+	const content = (result.details?.rendering?.content ?? normalizeLineEndings(context.args.content)).replace(/\n$/, "");
+	const lines = content ? content.split("\n") : [];
+	const { shown, hidden } = previewLines(lines, expanded, 10);
+	const body = shown.map((line, index) => {
 		const number = String(index + 1).padStart(3, " ");
 		return `${theme.fg("dim", number)} ${theme.fg("borderMuted", "│")} ${line}`;
-	});
-	if (hidden) rendered.push(moreLines(hidden, theme));
-	return rendered.join("\n");
-}
-
-function countLines(content: string): number {
-	return content.length === 0 ? 0 : content.split("\n").length;
+	}).join("\n");
+	return frameResultWithBottomLabel(body, resultLabel(`${lines.length} lines`, expanded, hidden, theme), status, theme, width);
 }

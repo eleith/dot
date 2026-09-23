@@ -8,12 +8,14 @@ import {
 import { Text } from "@earendil-works/pi-tui";
 import {
 	defaultFrameWidth,
-	frameError,
 	frameResultWithBottomLabel,
 	frameStatus,
+	frameToolError,
 	frameTop,
+	resultLabel,
 } from "./frame.ts";
 import { normalizeLineEndings, textFromResult } from "./tool-result.ts";
+import { previewLines } from "./preview.ts";
 import { isToolChromeEnabled } from "./state.ts";
 
 type BuiltinReadTool = ReturnType<typeof createReadToolDefinition>;
@@ -33,14 +35,14 @@ export function registerReadRendering(pi: ExtensionAPI, cwd: string): void {
 
 	const renderCall: ReadRenderCall = (args, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderCall) return original.renderCall(args, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(frameTop(readTitle(args, theme), frameStatus(context), theme, defaultFrameWidth()));
 		return component;
 	};
 
 	const renderResult: ReadRenderResult = (result, options, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderResult) return original.renderResult(result, options, theme, context);
-		const component = context.lastComponent ?? new Text("", 0, 0);
+		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
 		component.setText(renderReadResult(result as AgentToolResult<ReadDisplayDetails>, options.expanded, theme, context));
 		return component;
 	};
@@ -82,19 +84,22 @@ function renderReadResult(
 ): string {
 	const status = frameStatus(context);
 	const width = defaultFrameWidth();
-	if (context.isError) return frameError(textFromResult(result) || "Error", theme, width);
+	if (context.isError) return frameToolError(textFromResult(result), expanded, theme, width);
 
+	if (result.content.some((item) => item.type === "image")) {
+		return frameResultWithBottomLabel("", resultLabel("image", expanded, 0, theme), status, theme, width);
+	}
 	const details = result.details?.rendering;
-	if (!details) return frameResultWithBottomLabel(theme.fg("dim", "(non-text read)"), "read", status, theme, width);
-
-	const lineCount = details.text.length === 0 ? 0 : details.text.split("\n").length;
+	const text = (details?.text ?? normalizeLineEndings(textFromResult(result))).replace(/\n$/, "");
+	const lines = text ? text.split("\n") : [];
+	const { shown, hidden } = previewLines(lines, expanded, 10);
 	const truncation = result.details?.truncation ? " · truncated" : "";
-	const body = expanded ? renderNumberedLines(details.text, details.offset, theme) : theme.fg("dim", "(expand tool output to view)");
-	return frameResultWithBottomLabel(body, `${lineCount} lines${truncation}`, status, theme, width);
+	const summary = `${lines.length} lines${truncation}`;
+	const body = renderNumberedLines(shown, details?.offset ?? context.args.offset ?? 1, theme);
+	return frameResultWithBottomLabel(body, resultLabel(summary, expanded, hidden, theme), status, theme, width);
 }
 
-function renderNumberedLines(text: string, offset: number, theme: ReadTheme): string {
-	const lines = text.split("\n");
+function renderNumberedLines(lines: string[], offset: number, theme: ReadTheme): string {
 	const lastLineNumber = offset + Math.max(0, lines.length - 1);
 	const numberWidth = Math.max(3, String(lastLineNumber).length);
 	return lines.map((line, index) => {
