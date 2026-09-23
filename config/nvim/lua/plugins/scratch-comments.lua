@@ -1,16 +1,5 @@
 return {
 	"https://git.eleith.com/eleith/scratch-comments.nvim",
-	-- cmd = {
-	-- 	"Comment",
-	-- 	"CommentShow",
-	-- 	"CommentNext",
-	-- 	"CommentPrev",
-	-- 	"CommentDelete",
-	-- 	"CommentList",
-	-- 	"CommentExport",
-	-- 	"CommentToggle",
-	-- 	"CommentClear",
-	-- },
 	keys = {
 		{ "<leader>cc", "<Cmd>Comment<CR>",       desc = "Comment on line" },
 		{ "<leader>cc", ":Comment<CR>",           mode = "x",                     desc = "Comment on selection" },
