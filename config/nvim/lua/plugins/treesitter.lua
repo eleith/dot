@@ -2,10 +2,9 @@ return {
 	"nvim-treesitter/nvim-treesitter",
 	branch = "main", -- Forces the rewrite branch
 	build = ":TSUpdate",
-	event = { "BufReadPre", "BufNewFile" },
+	lazy = false,
 	dependencies = {
 		"nvim-treesitter/nvim-treesitter-textobjects",
-		"MeanderingProgrammer/treesitter-modules.nvim",
 	},
 	config = function()
 		local languages = {
@@ -22,7 +21,6 @@ return {
 			"php",
 			"python",
 			"regex",
-			"toml",
 			"tsx",
 			"typescript",
 			"yaml",
@@ -36,20 +34,21 @@ return {
 			"toml",
 		}
 
-		-- Covers ensure_installed + highlight + indent + fold + incremental selection
-		local ts = require("treesitter-modules")
-		ts.setup({
-			ensure_installed = languages,
-			ignore_install = {},
-			sync_install = false,
-			auto_install = false,
+		-- Install missing parsers from the list above; already installed ones are skipped.
+		require("nvim-treesitter").install(languages)
 
-			highlight = {
-				enable = true,
-			},
-			indent = {
-				enable = true,
-			},
+		-- Enable the two features you currently use.
+		vim.api.nvim_create_autocmd("FileType", {
+			group = vim.api.nvim_create_augroup("treesitter.setup", { clear = true }),
+			callback = function(args)
+				local language = vim.treesitter.language.get_lang(args.match) or args.match
+				if not vim.treesitter.language.add(language) then
+					return -- No parser installed for this filetype.
+				end
+
+				vim.treesitter.start(args.buf, language)
+				vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+			end,
 		})
 
 		-- textobjects plugin now uses its own setup + keymaps
