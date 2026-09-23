@@ -67,15 +67,6 @@ return {
 			{ "marksman" },
 			{ "fish_lsp" },
 			{ "tombi" },
-			{
-				"ruby_lsp",
-				settings = {
-					mason = false,
-					cmd = { vim.fn.expand("~/.asdf/shims/ruby-lsp") },
-					formatter = 'standard',
-					linters = { 'standard' },
-				},
-			},
 			{ "gopls" },
 			{ "templ" },
 			{ "golangci_lint_ls" },
@@ -103,26 +94,24 @@ return {
 				},
 			},
 			{
-				"rust-analyzer",
-				filetypes = {
-					"rust",
-				},
-				cmd = {
-					vim.fn.expand("~/.cargo/bin/rust-analyzer"),
-				},
-				imports = {
-					granularity = {
-						group = "module",
+				"rust_analyzer",
+				settings = {
+					["rust-analyzer"] = {
+						imports = {
+							granularity = {
+								group = "module",
+							},
+							prefix = "self",
+						},
+						cargo = {
+							buildScripts = {
+								enable = true
+							},
+						},
+						procMacro = {
+							enable = true
+						},
 					},
-					prefix = "self",
-				},
-				cargo = {
-					buildScripts = {
-						enable = true
-					},
-				},
-				procMacro = {
-					enable = true
 				},
 			},
 			{ "stylelint_lsp" },
