@@ -1,0 +1,24 @@
+{
+  "lastChangelogVersion": "0.87.1",
+  "theme": "light/dark",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-6-sol",
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "enableInstallTelemetry": false,
+  "tuiMode": "fullscreen",
+  "packages": [
+    {
+      "source": "~/.config/nono/packages/nolabs-ai/pi"
+    },
+    "npm:pi-vim",
+    "npm:pi-btw",
+    "npm:pi-subagents-lite",
+    "npm:pi-web-search",
+    "npm:pi-smart-fetch"
+  ],
+  "editorPaddingX": 1,
+  "outputPad": 1,
+  "defaultThinkingLevel": "high"
+}
