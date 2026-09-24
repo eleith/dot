@@ -1,5 +1,6 @@
 return {
 	"https://git.eleith.com/eleith/scratch-comments.nvim",
+	lazy = false,
 	keys = {
 		{ "<leader>cc", "<Cmd>Comment<CR>",       desc = "Comment on line" },
 		{ "<leader>cc", ":Comment<CR>",           mode = "x",                     desc = "Comment on selection" },
