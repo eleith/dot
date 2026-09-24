@@ -11,16 +11,15 @@ into this repo so that i can share them with others.
 
 ## tools
 
-i'm using
-
 * [fish](https://fishshell.com/) (4.8.1)
 * [tmux](https://github.com/tmux/tmux/wiki) (3.7c)
 * [nvim](https://neovim.io/) (0.12.1)
-* [mise](https://mise.jdx.dev) (2026.9.5)
-* [nono](https://nono.sh) (0.76.0)
-* [ghostty](https://ghostty.org) (1.3.1)
-* [cosmic](https://system76.com/cosmic/download)
+* [mise](https://mise.jdx.dev) (latest)
+* [nono](https://nono.sh) (latest)
+* [pi](https://pi.dev) (latest)
+* [ghostty](https://ghostty.org) (latest)
+* [cosmic](https://system76.com/cosmic/download) (latest)
 
 ## colorscheme
 
-i use [modus](https://github.com/protesilaos/modus-themes)
+i use [modus](https://github.com/protesilaos/modus-themes), tinted variation
