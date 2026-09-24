@@ -1,6 +1,6 @@
 {
   "lastChangelogVersion": "0.87.1",
-  "theme": "light/dark",
+  "theme": "modus-operandi-tinted/modus-vivendi-tinted",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6-sol",
   "terminal": {
