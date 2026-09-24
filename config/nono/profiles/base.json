@@ -1,5 +1,5 @@
 {
-  "$schema": "../profile.schema.json",
+	"$schema": "../profile.schema.json",
 	"meta": {
 		"name": "base",
 		"version": "1.0.0",
@@ -14,9 +14,12 @@
 			"script": "$HOME/.config/nono/hooks/stop.sh"
 		}
 	},
+	"linux": {
+		"af_unix_mediation": "pathname"
+	},
 	"filesystem": {
 		"allow": [
-			"/tmp",
+			"$HOME/.local/state/nono-scratch",
 			"~/.local/share/nvim",
 			"~/.local/state/nvim",
 			"/dev/ptmx",
@@ -45,6 +48,12 @@
 			"~/.ssh",
 			"~/.gnupg"
 		],
+		"unix_socket": [
+			"/run/nscd/socket"
+		],
+		"unix_socket_dir": [
+			"/tmp/nono-session"
+		],
 		"bypass_protection": [],
 		"suppress_save_prompt": [
 			"/"
@@ -64,6 +73,9 @@
 		"deny_vars": [],
 		"case_insensitive_vars": false,
 		"set_vars": {
+			"TMPDIR": "$HOME/.local/state/nono-scratch",
+			"TMP": "$HOME/.local/state/nono-scratch",
+			"TEMP": "$HOME/.local/state/nono-scratch",
 			"EDITOR": "nvim",
 			"SHELL": "~/.local/bin/agent-bash",
 			"SSH_AUTH_SOCK": "/tmp/nono-session/ssh.sock",

@@ -99,6 +99,7 @@ setup_dbus_proxy() {
   rm -f "$sock_file" "$pid_file"
   # Disassociate stdout/stderr and close lock FD 200
   nohup xdg-dbus-proxy "$real_host_bus" "$sock_file" \
+    --filter \
     --talk="org.freedesktop.Notifications" 200>&- &> "$log_file" &
   echo $! > "$pid_file"
   disown $!
