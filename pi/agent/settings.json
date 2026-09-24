@@ -14,9 +14,9 @@
     },
     "npm:pi-vim",
     "npm:pi-btw",
-    "npm:pi-subagents-lite",
     "npm:pi-web-search",
-    "npm:pi-smart-fetch"
+    "npm:pi-smart-fetch",
+    "npm:pi-subagents-lite"
   ],
   "editorPaddingX": 1,
   "outputPad": 1,
