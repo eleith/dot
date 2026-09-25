@@ -16,7 +16,8 @@ export class DesktopNotifier {
 
 	register(pi: ExtensionAPI): void {
 		pi.on("agent_start", () => {
-			this.runStartedAt = Date.now();
+			// Continuations are part of the same run until agent_settled.
+			this.runStartedAt ??= Date.now();
 			this.outcome = undefined;
 		});
 

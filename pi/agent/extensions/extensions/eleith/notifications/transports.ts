@@ -30,8 +30,7 @@ export async function deliverNotification(message: NotificationMessage, allowOsc
 		return "notify-send";
 	} catch {
 		if (!allowOsc) return "none";
-		writeToTerminal(wrapForTmux(osc777(message.title, message.body)));
-		return "osc777";
+		return writeToTerminal(wrapForTmux(osc777(message.title, message.body))) ? "osc777" : "none";
 	}
 }
 
@@ -52,14 +51,22 @@ function sanitizeField(value: string): string {
 	return value.replace(/[\x00-\x1f\x7f\x9c]/g, " ").replace(/;/g, ",").trim();
 }
 
-function writeToTerminal(sequence: string): void {
-	let fd: number | undefined;
+function writeToTerminal(sequence: string): boolean {
 	try {
-		fd = openSync("/dev/tty", "w");
-		writeSync(fd, sequence);
+		const fd = openSync("/dev/tty", "w");
+		try {
+			writeSync(fd, sequence);
+			return true;
+		} finally {
+			closeSync(fd);
+		}
 	} catch {
-		process.stdout.write(sequence);
-	} finally {
-		if (fd !== undefined) closeSync(fd);
+		if (!process.stdout.isTTY) return false;
+		try {
+			process.stdout.write(sequence);
+			return true;
+		} catch {
+			return false;
+		}
 	}
 }

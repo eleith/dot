@@ -1,7 +1,6 @@
 import {
 	createBashToolDefinition,
 	type AgentToolResult,
-	type BashToolDetails,
 	type BashToolInput,
 	type ExtensionAPI,
 } from "@earendil-works/pi-coding-agent";
@@ -25,13 +24,6 @@ type BashRenderContext = Parameters<BashRenderResult>[3];
 type BashRenderOptions = Parameters<BashRenderResult>[1];
 type BashTheme = Parameters<BashRenderResult>[2];
 
-interface BashDisplayDetails extends BashToolDetails {
-	readonly rendering?: {
-		readonly output: string;
-		readonly exitCode: number | null;
-	};
-}
-
 export function registerBashRendering(pi: ExtensionAPI, cwd: string): void {
 	const original = createBashToolDefinition(cwd);
 
@@ -51,7 +43,7 @@ export function registerBashRendering(pi: ExtensionAPI, cwd: string): void {
 			return original.renderResult(result, options, theme, builtinContext);
 		}
 		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
-		component.setText(renderBashResult(result as AgentToolResult<BashDisplayDetails>, options, theme, context));
+		component.setText(renderBashResult(result, options, theme, context));
 		return component;
 	};
 
@@ -59,19 +51,6 @@ export function registerBashRendering(pi: ExtensionAPI, cwd: string): void {
 		...original,
 		name: "bash",
 		renderShell: "self",
-		async execute(toolCallId, params, signal, onUpdate, ctx) {
-			const result = await original.execute(toolCallId, params, signal, onUpdate, ctx) as AgentToolResult<BashDisplayDetails>;
-			const output = textFromResult(result);
-			result.details = {
-				...(result.details ?? {}),
-				rendering: {
-					output,
-					// The built-in tool throws for nonzero exits; returned results succeeded.
-					exitCode: 0,
-				},
-			};
-			return result;
-		},
 		renderCall,
 		renderResult,
 	});
@@ -92,7 +71,7 @@ function firstCommandWord(command: string): string | undefined {
 }
 
 function renderBashResult(
-	result: AgentToolResult<BashDisplayDetails>,
+	result: AgentToolResult,
 	options: BashRenderOptions,
 	theme: BashTheme,
 	context: BashRenderContext,
@@ -100,8 +79,11 @@ function renderBashResult(
 	const status = frameStatus(context);
 	const width = defaultFrameWidth();
 	const elapsedMs = updateTiming(context, options);
-	const details = result.details?.rendering;
-	const parsed = parseBashOutput(details?.output ?? textFromResult(result), details?.exitCode ?? null);
+	const rawOutput = textFromResult(result);
+	// Only failed commands have a Pi status line; success and partial stdout are arbitrary text.
+	const parsed = context.isError
+		? parseBashOutput(rawOutput, null)
+		: { body: rawOutput, exitCode: options.isPartial ? null : 0, timedOut: false, aborted: false };
 	const { body, hidden } = previewBashOutput(parsed.body, options.expanded);
 	const output = context.isError && body ? theme.fg("error", body) : body;
 	const duration = elapsedMs === undefined ? "" : theme.fg("dim", formatDuration(elapsedMs));

@@ -12,4 +12,4 @@ export interface ChromeSnapshot {
 	readonly gitStatus: GitStatus | null;
 }
 
-export type ThemeLike = Pick<Theme, "fg">;
+export type ThemeLike = Pick<Theme, "fg" | "bold">;

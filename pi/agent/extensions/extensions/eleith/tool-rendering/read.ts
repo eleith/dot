@@ -23,13 +23,6 @@ type ReadRenderCall = NonNullable<BuiltinReadTool["renderCall"]>;
 type ReadRenderResult = NonNullable<BuiltinReadTool["renderResult"]>;
 type ReadTheme = Parameters<ReadRenderResult>[2];
 
-interface ReadDisplayDetails extends ReadToolDetails {
-	readonly rendering?: {
-		readonly text: string;
-		readonly offset: number;
-	};
-}
-
 export function registerReadRendering(pi: ExtensionAPI, cwd: string): void {
 	const original = createReadToolDefinition(cwd);
 
@@ -43,7 +36,7 @@ export function registerReadRendering(pi: ExtensionAPI, cwd: string): void {
 	const renderResult: ReadRenderResult = (result, options, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderResult) return original.renderResult(result, options, theme, context);
 		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
-		component.setText(renderReadResult(result as AgentToolResult<ReadDisplayDetails>, options.expanded, theme, context));
+		component.setText(renderReadResult(result, options.expanded, theme, context));
 		return component;
 	};
 
@@ -51,20 +44,6 @@ export function registerReadRendering(pi: ExtensionAPI, cwd: string): void {
 		...original,
 		name: "read",
 		renderShell: "self",
-		async execute(toolCallId, params, signal, onUpdate, ctx) {
-			const result = await original.execute(toolCallId, params, signal, onUpdate, ctx) as AgentToolResult<ReadDisplayDetails>;
-			const text = textFromResult(result);
-			if (text) {
-				result.details = {
-					...(result.details ?? {}),
-					rendering: {
-						text: normalizeLineEndings(text),
-						offset: params.offset ?? 1,
-					},
-				};
-			}
-			return result;
-		},
 		renderCall,
 		renderResult,
 	});
@@ -77,7 +56,7 @@ function readTitle(args: ReadToolInput, theme: ReadTheme): string {
 }
 
 function renderReadResult(
-	result: AgentToolResult<ReadDisplayDetails>,
+	result: AgentToolResult<ReadToolDetails>,
 	expanded: boolean,
 	theme: ReadTheme,
 	context: Parameters<ReadRenderResult>[3],
@@ -89,13 +68,13 @@ function renderReadResult(
 	if (result.content.some((item) => item.type === "image")) {
 		return frameResultWithBottomLabel("", resultLabel("image", expanded, 0, theme), status, theme, width);
 	}
-	const details = result.details?.rendering;
-	const text = (details?.text ?? normalizeLineEndings(textFromResult(result))).replace(/\n$/, "");
-	const lines = text ? text.split("\n") : [];
+	const rawText = normalizeLineEndings(textFromResult(result));
+	const text = rawText.replace(/\n$/, "");
+	const lines = rawText ? text.split("\n") : [];
 	const { shown, hidden } = previewLines(lines, expanded, 10);
 	const truncation = result.details?.truncation ? " · truncated" : "";
 	const summary = `${lines.length} lines${truncation}`;
-	const body = renderNumberedLines(shown, details?.offset ?? context.args.offset ?? 1, theme);
+	const body = renderNumberedLines(shown, context.args.offset ?? 1, theme);
 	return frameResultWithBottomLabel(body, resultLabel(summary, expanded, hidden, theme), status, theme, width);
 }
 

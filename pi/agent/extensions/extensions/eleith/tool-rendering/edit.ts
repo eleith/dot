@@ -63,7 +63,7 @@ function renderEditResult(
 	const stats = diffStats(diff);
 	const label = `+${stats.added} -${stats.removed}`;
 	const lines = diff.replace(/\n$/, "").split("\n")
-		.filter((line) => line && !line.startsWith("***") && !line.startsWith("---") && !line.startsWith("+++"));
+		.filter((line) => line && !line.startsWith("***"));
 	const { shown, hidden } = previewLines(lines, expanded, 8);
 	return frameResultWithBottomLabel(renderDiff(shown, theme), resultLabel(label, expanded, hidden, theme), status, theme, width);
 }
@@ -81,8 +81,8 @@ function diffStats(diff: string): { added: number; removed: number } {
 	let added = 0;
 	let removed = 0;
 	for (const line of diff.split("\n")) {
-		if (line.startsWith("+") && !line.startsWith("+++")) added++;
-		if (line.startsWith("-") && !line.startsWith("---")) removed++;
+		if (line.startsWith("+")) added++;
+		if (line.startsWith("-")) removed++;
 	}
 	return { added, removed };
 }

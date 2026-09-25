@@ -1,20 +1,29 @@
 import { basename } from "node:path";
 import type { ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { visibleWidth } from "@earendil-works/pi-tui";
 import type { GitStatus, ThemeLike } from "./types.ts";
 
 const ANSI_PATTERN = /\x1b\[[0-9;]*m/g;
 
-type CompactionSettingsProvider = {
-	readonly settingsManager?: {
-		getCompactionSettings?(): { readonly enabled?: boolean } | undefined;
-	};
-};
+export function styleThinking(theme: ThemeLike, level: ExtensionContext["thinkingLevel"], text: string): string {
+	const color = level === "low" ? "success"
+		: level === "medium" ? "accent"
+		: level === "high" ? "warning"
+		: level === "xhigh" ? "thinkingXhigh"
+		: level === "max" ? "thinkingMax"
+		: level === "minimal" ? "muted" : "dim";
+	const styled = theme.fg(color, text);
+	return level === "off" || level === "minimal" || level === undefined ? styled : theme.bold(styled);
+}
 
-export function topRightStatus(ctx: ExtensionContext, theme: ThemeLike, separator: string): string {
-	return theme.fg("muted", wrap(joinSections([
-		`${modelLabel(ctx.model)} (${thinkingLabel(ctx.thinkingLevel)})`,
-		contextLabel(ctx),
-	], separator)));
+export function topRightStatus(ctx: ExtensionContext, theme: ThemeLike, separator: string, width = Infinity): string {
+	const thinking = theme.fg("muted", "Thinking: ")
+		+ styleThinking(theme, ctx.thinkingLevel, thinkingLabel(ctx.thinkingLevel));
+	const context = contextLabel(ctx, theme);
+	const full = wrap(joinSections([theme.fg("muted", modelLabel(ctx.model)), thinking, context], separator));
+	if (visibleWidth(full) <= width) return full;
+	const compact = wrap(joinSections([thinking, context], separator));
+	return visibleWidth(compact) <= width ? compact : wrap(context);
 }
 
 export function bottomLeftStatus(
@@ -24,12 +33,17 @@ export function bottomLeftStatus(
 	gitStatus: GitStatus | null,
 	theme: ThemeLike,
 	separator: string,
-): string {
+	width = Infinity,
+): string[] {
 	const project = basename(ctx.cwd || process.cwd());
 	const extensionStatus = extensionStatusLabel(statuses);
-	const projectSection = `${extensionStatus ? `(${extensionStatus}) ` : ""}${project}`;
 	const gitSection = gitLabel(gitBranch, gitStatus);
-	return theme.fg("dim", wrap(joinSections([projectSection, gitSection], separator)));
+	const full = wrap(joinSections([extensionStatus, project, gitSection], separator));
+	if (!gitSection || visibleWidth(full) <= width) return [theme.fg("dim", full)];
+	return [
+		theme.fg("dim", wrap(joinSections([extensionStatus, project], separator))),
+		theme.fg("dim", wrap(gitSection)),
+	];
 }
 
 export function extensionStatusLabel(statuses: ReadonlyMap<string, string> | undefined): string {
@@ -37,13 +51,16 @@ export function extensionStatusLabel(statuses: ReadonlyMap<string, string> | und
 	return [...statuses.values()]
 		.map((value) => stripAnsi(value).trim())
 		.filter(Boolean)
-		.join(" · ");
+		.join(" › ");
 }
 
-export function contextLabel(ctx: ExtensionContext): string {
-	const usage = ctx.getContextUsage();
-	const percent = typeof usage?.percent === "number" ? `${Math.round(usage.percent)}%` : "?";
-	return `ctx: ${percent} (${compactionMode(ctx)})`;
+export function contextLabel(ctx: ExtensionContext, theme: ThemeLike): string {
+	const percent = ctx.getContextUsage()?.percent;
+	const color = typeof percent !== "number" ? "muted"
+		: percent >= 90 ? "error" : percent >= 75 ? "warning" : percent >= 50 ? "accent" : "muted";
+	const value = typeof percent === "number" ? `${Math.round(percent)}%` : "unknown";
+	return theme.fg(color, "Context: ")
+		+ (color === "muted" ? theme.fg(color, value) : theme.bold(theme.fg(color, value)));
 }
 
 export function modelLabel(model: ExtensionContext["model"]): string {
@@ -53,26 +70,24 @@ export function modelLabel(model: ExtensionContext["model"]): string {
 
 export function thinkingLabel(level: ExtensionContext["thinkingLevel"]): string {
 	switch (level) {
-		case "minimal": return "min";
-		case "medium": return "med";
-		case "xhigh": return "xhi";
-		case "off":
-		case undefined:
-			return "off";
-		default:
-			return level;
+		case "minimal": return "Minimal";
+		case "low": return "Low";
+		case "medium": return "Medium";
+		case "high": return "High";
+		case "xhigh": return "Extra high";
+		case "max": return "Maximum";
+		default: return "Off";
 	}
 }
 
 export function gitLabel(branch: string | null, status: GitStatus | null): string {
 	if (!branch) return "";
-	if (!status || (status.staged === 0 && status.unstaged === 0 && status.untracked === 0)) return branch;
-	return `${branch} +${status.staged} ~${status.unstaged} ?${status.untracked}`;
-}
-
-function compactionMode(ctx: ExtensionContext): "auto" | "manual" {
-	const provider = ctx as ExtensionContext & CompactionSettingsProvider;
-	return provider.settingsManager?.getCompactionSettings?.()?.enabled === false ? "manual" : "auto";
+	const changes = status ? [
+		status.staged > 0 ? `${status.staged} staged ${status.staged === 1 ? "change" : "changes"}` : "",
+		status.unstaged > 0 ? `${status.unstaged} unstaged ${status.unstaged === 1 ? "change" : "changes"}` : "",
+		status.untracked > 0 ? `${status.untracked} untracked ${status.untracked === 1 ? "file" : "files"}` : "",
+	].filter(Boolean) : [];
+	return `Git: ${branch}` + (status ? ` › ${changes.length ? changes.join(" › ") : "clean"}` : "");
 }
 
 function joinSections(parts: readonly string[], separator: string): string {

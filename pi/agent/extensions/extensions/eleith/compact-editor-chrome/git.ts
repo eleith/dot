@@ -7,6 +7,7 @@ const DEFAULT_TIMEOUT_MS = 500;
 export class GitStatusPoller {
 	private status: GitStatus | null = null;
 	private lastRefreshAt = 0;
+	private generation = 0;
 	private pending = false;
 	private cwd: string | null = null;
 
@@ -20,6 +21,8 @@ export class GitStatusPoller {
 	}
 
 	invalidate(): void {
+		this.generation++;
+		this.status = null;
 		this.lastRefreshAt = 0;
 	}
 
@@ -33,14 +36,17 @@ export class GitStatusPoller {
 		if (this.pending || Date.now() - this.lastRefreshAt < this.ttlMs) return;
 		this.pending = true;
 		const requestedCwd = cwd;
+		const requestedGeneration = this.generation;
 
 		void readGitStatus(requestedCwd).then((status) => {
-			if (this.cwd !== requestedCwd) return;
+			if (this.cwd !== requestedCwd || this.generation !== requestedGeneration) return;
 			this.status = status;
 			this.lastRefreshAt = Date.now();
 			this.requestRender();
 		}).finally(() => {
 			this.pending = false;
+			// Discarded requests must not block the next directory or branch refresh.
+			if (this.cwd && (this.cwd !== requestedCwd || this.generation !== requestedGeneration)) this.refresh(this.cwd);
 		});
 	}
 }

@@ -30,19 +30,19 @@ class PromptStatusWidget implements Component {
 		const snapshot = this.getSnapshot();
 		if (!snapshot) return [];
 
-		const separator = this.theme.fg("borderMuted", "───");
-		const text = this.placement === "top"
-			? topRightStatus(snapshot.ctx, this.theme, separator)
-			: bottomLeftStatus(
-				snapshot.ctx,
-				snapshot.footerData?.getExtensionStatuses(),
-				snapshot.footerData?.getGitBranch() ?? null,
-				snapshot.gitStatus,
-				this.theme,
-				separator,
-			);
-
-		return [this.placement === "top" ? alignRight(text, width) : truncateToWidth(text, width, "…")];
+		const separator = this.theme.fg("muted", "›");
+		if (this.placement === "top") {
+			return [alignRight(topRightStatus(snapshot.ctx, this.theme, separator, width), width)];
+		}
+		return bottomLeftStatus(
+			snapshot.ctx,
+			snapshot.footerData?.getExtensionStatuses(),
+			snapshot.footerData?.getGitBranch() ?? null,
+			snapshot.gitStatus,
+			this.theme,
+			separator,
+			width,
+		).map((line) => truncateToWidth(line, width, "…"));
 	}
 
 	invalidate(): void {}
@@ -77,13 +77,17 @@ export class CompactEditorChromeController {
 			this.tui = tui;
 			this.footerData = footerData;
 			this.disposeFooterBranchListener?.();
-			this.disposeFooterBranchListener = footerData.onBranchChange(() => {
+			const unsubscribe = footerData.onBranchChange(() => {
 				this.git.invalidate();
 				this.git.refresh(ctx.cwd);
 				this.requestRender();
 			});
+			this.disposeFooterBranchListener = unsubscribe;
 
-			return new EmptyFooterWithDispose(() => this.disposeFooterBranchListener?.());
+			return new EmptyFooterWithDispose(() => {
+				unsubscribe();
+				if (this.disposeFooterBranchListener === unsubscribe) this.disposeFooterBranchListener = undefined;
+			});
 		});
 
 		ctx.ui.setWidget(TOP_WIDGET, (tui, theme) => {
@@ -123,6 +127,10 @@ export class CompactEditorChromeController {
 
 	isEnabled(): boolean {
 		return this.enabled;
+	}
+
+	getExtensionStatuses(): ReadonlyMap<string, string> | undefined {
+		return this.footerData?.getExtensionStatuses();
 	}
 
 	private updateContext(ctx: ExtensionContext): void {

@@ -15,12 +15,6 @@ type WriteRenderCall = NonNullable<BuiltinWriteTool["renderCall"]>;
 type WriteRenderResult = NonNullable<BuiltinWriteTool["renderResult"]>;
 type WriteTheme = Parameters<WriteRenderResult>[2];
 
-interface WriteDisplayDetails {
-	readonly rendering?: {
-		readonly content: string;
-	};
-}
-
 export function registerWriteRendering(pi: ExtensionAPI, cwd: string): void {
 	const original = createWriteToolDefinition(cwd);
 
@@ -37,7 +31,7 @@ export function registerWriteRendering(pi: ExtensionAPI, cwd: string): void {
 			return original.renderResult(result, options, theme, builtinContext);
 		}
 		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
-		component.setText(renderWriteResult(result as AgentToolResult<WriteDisplayDetails>, options.expanded, theme, context));
+		component.setText(renderWriteResult(result, options.expanded, theme, context));
 		return component;
 	};
 
@@ -45,16 +39,6 @@ export function registerWriteRendering(pi: ExtensionAPI, cwd: string): void {
 		...original,
 		name: "write",
 		renderShell: "self",
-		async execute(toolCallId, params, signal, onUpdate, ctx) {
-			const result = await original.execute(toolCallId, params, signal, onUpdate, ctx) as AgentToolResult<WriteDisplayDetails>;
-			result.details = {
-				...(result.details ?? {}),
-				rendering: {
-					content: normalizeLineEndings(params.content),
-				},
-			};
-			return result;
-		},
 		renderCall,
 		renderResult,
 	});
@@ -65,7 +49,7 @@ function writeTitle(args: WriteToolInput, theme: WriteTheme): string {
 }
 
 function renderWriteResult(
-	result: AgentToolResult<WriteDisplayDetails>,
+	result: AgentToolResult,
 	expanded: boolean,
 	theme: WriteTheme,
 	context: Parameters<WriteRenderResult>[3],
@@ -74,8 +58,9 @@ function renderWriteResult(
 	const width = defaultFrameWidth();
 	if (context.isError) return frameToolError(textFromResult(result), expanded, theme, width);
 
-	const content = (result.details?.rendering?.content ?? normalizeLineEndings(context.args.content)).replace(/\n$/, "");
-	const lines = content ? content.split("\n") : [];
+	const rawContent = normalizeLineEndings(context.args.content);
+	const content = rawContent.replace(/\n$/, "");
+	const lines = rawContent ? content.split("\n") : [];
 	const { shown, hidden } = previewLines(lines, expanded, 10);
 	const body = shown.map((line, index) => {
 		const number = String(index + 1).padStart(3, " ");

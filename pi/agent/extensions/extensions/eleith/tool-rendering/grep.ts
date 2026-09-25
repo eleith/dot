@@ -22,13 +22,6 @@ type GrepRenderCall = NonNullable<BuiltinGrepTool["renderCall"]>;
 type GrepRenderResult = NonNullable<BuiltinGrepTool["renderResult"]>;
 type GrepTheme = Parameters<GrepRenderResult>[2];
 
-interface GrepDisplayDetails extends GrepToolDetails {
-	readonly rendering?: {
-		readonly pattern: string;
-		readonly text: string;
-	};
-}
-
 export function registerGrepRendering(pi: ExtensionAPI, cwd: string): void {
 	const original = createGrepToolDefinition(cwd);
 
@@ -42,7 +35,7 @@ export function registerGrepRendering(pi: ExtensionAPI, cwd: string): void {
 	const renderResult: GrepRenderResult = (result, options, theme, context) => {
 		if (!isToolChromeEnabled() && original.renderResult) return original.renderResult(result, options, theme, context);
 		const component = context.lastComponent instanceof Text ? context.lastComponent : new Text("", 0, 0);
-		component.setText(renderGrepResult(result as AgentToolResult<GrepDisplayDetails>, options.expanded, theme, context));
+		component.setText(renderGrepResult(result, options.expanded, theme, context));
 		return component;
 	};
 
@@ -50,18 +43,6 @@ export function registerGrepRendering(pi: ExtensionAPI, cwd: string): void {
 		...original,
 		name: "grep",
 		renderShell: "self",
-		async execute(toolCallId, params, signal, onUpdate, ctx) {
-			const result = await original.execute(toolCallId, params, signal, onUpdate, ctx) as AgentToolResult<GrepDisplayDetails>;
-			const text = normalizeLineEndings(textFromResult(result));
-			result.details = {
-				...(result.details ?? {}),
-				rendering: {
-					pattern: params.pattern,
-					text,
-				},
-			};
-			return result;
-		},
 		renderCall,
 		renderResult,
 	});
@@ -74,7 +55,7 @@ function grepTitle(args: GrepToolInput, theme: GrepTheme): string {
 }
 
 function renderGrepResult(
-	result: AgentToolResult<GrepDisplayDetails>,
+	result: AgentToolResult<GrepToolDetails>,
 	expanded: boolean,
 	theme: GrepTheme,
 	context: Parameters<GrepRenderResult>[3],
@@ -83,8 +64,7 @@ function renderGrepResult(
 	const width = defaultFrameWidth();
 	if (context.isError) return frameToolError(textFromResult(result), expanded, theme, width);
 
-	const details = result.details?.rendering;
-	const text = details?.text ?? textFromResult(result);
+	const text = normalizeLineEndings(textFromResult(result));
 	const lines = text.split("\n").filter(Boolean);
 	const matches = lines.filter(isMatchLine);
 	const limit = result.details?.matchLimitReached ? " · limit reached" : "";
@@ -94,14 +74,14 @@ function renderGrepResult(
 	// Three matches across three files use at most eight grouped lines (headings and spacing included).
 	// Context and truncation notices remain available when expanded, but cannot grow the preview.
 	const shown = expanded ? lines : matches.slice(0, 3);
-	const rendered = renderGroupedMatches(shown.join("\n"), details?.pattern ?? "", theme);
+	const rendered = renderGroupedMatches(shown.join("\n"), context.args.pattern, context.args.literal ?? false, context.args.ignoreCase ?? false, theme);
 	const hidden = expanded ? 0 : lines.length - shown.length;
 	const summary = `${matches.length} ${matches.length === 1 ? "match" : "matches"}${limit}${truncated}`;
 	return frameResultWithBottomLabel(rendered, resultLabel(summary, expanded, hidden, theme), status, theme, width);
 }
 
-function renderGroupedMatches(text: string, pattern: string, theme: GrepTheme): string {
-	const highlight = makeHighlighter(pattern, theme);
+function renderGroupedMatches(text: string, pattern: string, literal: boolean, ignoreCase: boolean, theme: GrepTheme): string {
+	const highlight = makeHighlighter(pattern, literal, ignoreCase, theme);
 	const output: string[] = [];
 	let currentFile = "";
 
@@ -136,17 +116,14 @@ function isMatchLine(line: string): boolean {
 	return /^.+?:\d+:/.test(line);
 }
 
-function makeHighlighter(pattern: string, theme: GrepTheme): (line: string) => string {
+function makeHighlighter(pattern: string, literal: boolean, ignoreCase: boolean, theme: GrepTheme): (line: string) => string {
 	if (!pattern) return (line) => line;
 	try {
-		const regex = new RegExp(pattern, "gi");
+		const source = literal ? pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : pattern;
+		const regex = new RegExp(source, ignoreCase ? "gi" : "g");
 		return (line: string) => line.replace(regex, (match) => theme.fg("warning", theme.bold(match)));
 	} catch {
-		const lowerPattern = pattern.toLowerCase();
-		return (line: string) => {
-			const index = line.toLowerCase().indexOf(lowerPattern);
-			if (index < 0 || lowerPattern.length === 0) return line;
-			return `${line.slice(0, index)}${theme.fg("warning", theme.bold(line.slice(index, index + pattern.length)))}${line.slice(index + pattern.length)}`;
-		};
+		// Unsupported regex syntax should not produce misleading highlighting.
+		return (line) => line;
 	}
 }
