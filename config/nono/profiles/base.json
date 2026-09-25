@@ -67,6 +67,8 @@
 			"SHELL",
 			"SSH_AUTH_SOCK",
 			"TERM",
+			"TMUX",
+			"TMUX_PANE",
 			"USER",
 			"DBUS_SESSION_BUS_ADDRESS"
 		],
