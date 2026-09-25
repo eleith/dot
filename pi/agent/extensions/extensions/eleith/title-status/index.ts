@@ -95,10 +95,9 @@ export default function titleStatus(pi: ExtensionAPI) {
 		stop();
 		if (enabled) render(ctx);
 	});
-	pi.on("session_shutdown", (_event, ctx) => {
+	pi.on("session_shutdown", () => {
 		working = false;
 		stop();
-		if (enabled) render(ctx);
 	});
 
 	return {
