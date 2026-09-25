@@ -54,8 +54,35 @@ return {
 			})
 		end
 
+		local function typescript_project(bufnr)
+			local root = vim.fs.root(bufnr, {
+				"package-lock.json", "pnpm-lock.yaml", "yarn.lock", "bun.lock",
+			})
+			if not root then return nil, nil end
+
+			local file = root .. "/node_modules/typescript/package.json"
+			if vim.fn.filereadable(file) ~= 1 then return root, nil end
+
+			local ok, pkg = pcall(vim.json.decode, table.concat(vim.fn.readfile(file), "\n"))
+			local major = ok and tonumber((pkg.version or ""):match("^(%d+)")) or nil
+			return root, major
+		end
+
 		local servers = {
-			{ "ts_ls" },
+			{
+				"tsc",
+				root_dir = function(bufnr, on_dir)
+					local root, major = typescript_project(bufnr)
+					if root and major and major >= 7 then on_dir(root) end
+				end,
+			},
+			{
+				"ts_ls",
+				root_dir = function(bufnr, on_dir)
+					local root, major = typescript_project(bufnr)
+					if root and (not major or major < 7) then on_dir(root) end
+				end,
+			},
 			{ "tailwindcss" },
 			{ "intelephense" },
 			{ "docker_language_server" },
