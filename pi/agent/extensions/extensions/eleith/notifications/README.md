@@ -1,5 +1,16 @@
-# Notifications
+# notifications
 
-When I switch to another window during a long run, I still want to know when Pi is ready for input. This sends a desktop notification after runs lasting at least 15 seconds, and after failed or aborted runs of any length. It uses the tmux pane title when available, falling back to the session name and directory if it cannot read it.
+after a 15 second LLM run (or a failed call), this sends a desktop notification
 
-Automatic notifications start on. Use `/eleith notifications off` or `on` to change that, `/eleith notifications toggle` to switch it, and `/eleith notifications test` to send one now. Delivery tries `notify-send` first and falls back to the terminal's OSC 777 sequence, so a blocked tmux socket does not stop it.
+## why
+
+so i can regain focus if i switched away from my terminal.
+
+attempts to use `notify-send` with a fallback to OSC 777.
+
+## how to use
+
+send in a prompt and watch the magic, 
+or force it with `/eleith notifications test`
+
+use `/eleith notifications off` to stop the magic

@@ -1,5 +1,14 @@
-# Title status
+# title status
 
-When several terminal tabs are open, the title should say which Pi session is in each one. It shows the session name, or the project folder if the session is unnamed, with `π` when idle and a small spinning icon while Pi works.
+puts the session name in the terminal title with a small spinning icon when an
+llm is working
 
-It starts shown. Use `/eleith title-status hide` to restore Pi's usual title, `/eleith title-status show` to bring this one back, or `/eleith title-status toggle` to switch between them.
+## why
+
+when running multiple LLMs, it's nice to quickly observe which ones are running
+
+## how to use
+
+make an llm call and be amazed.
+
+Use `/eleith title-status toggle` to be unamazed.

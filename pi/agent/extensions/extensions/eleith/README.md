@@ -1,7 +1,23 @@
-# Eleith's Pi extensions
+# my π extensions
 
-These are my small changes to Pi's terminal and editor, loaded together by `index.ts`. I keep the controls under `/eleith` so there is one command to remember. Type `/eleith` or `/eleith help` to see what is available.
+a handful of small personal extensions to Pi, only using documented APIs.
 
-The [welcome card](welcome/README.md) shows where a new session started, while [compact editor chrome](compact-editor-chrome/README.md) keeps model, context, and Git details near the prompt. [Tool rendering](tool-rendering/README.md) makes calls and results easier to scan. To follow a run from outside the editor, there is [terminal progress](progress/README.md), [title status](title-status/README.md), and [desktop notifications](notifications/README.md). [Command completion](command-completion/README.md) makes their `/eleith` actions easier to find.
+| extension | description |
+| --- | --- |
+| [command completion](command-completion/README.md) | `/eleith` shortcut to interact with all the below extensions  |
+| [compact editor chrome](compact-editor-chrome/README.md) | minimal status details around the prompt input. less is more |
+| [notifications](notifications/README.md) | notifications on turn end using notify-send (with OSC777 fallback for remote support) |
+| [progress](progress/README.md) | OSC9;4 progress bars (with TMUX wrapping support) while waiting on a turn|
+| [title status](title-status/README.md) | simple terminal titles with icon progress indicators|
+| [tool rendering](tool-rendering/README.md) | minimal and pretty rendering for bash/ls/grep/read tool calls |
+| [welcome](welcome/README.md) | grow a tree everytime you start pi |
 
-Use `/eleith <feature> <action>` to control a feature, for example `/eleith progress test` or `/eleith title-status hide`. Each linked README has the details. Switchable features start enabled and reset when extensions reload; the welcome card and command completion have no on/off switch. Pi's built-in terminal progress is disabled in `~/.pi/agent/settings.json` so it does not compete with this one.
+## Why
+
+because extending π is at the ❤️ of how and why it was built
+
+## How to use
+
+copy this folder to your extensions folder, run `/reload` and then run `/eleith help` to learn more
+
+most extensions can be disabled (except for the welcome 🌳)

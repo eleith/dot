@@ -1,5 +1,16 @@
-# Compact editor chrome
+# compact editor chrome
 
-I want the useful status details near the prompt without giving them a whole footer. This puts the model, thinking level, and context usage just above the editor, with extension status, project, Git branch, and file changes below it. Git refreshes in the background, so the editor does not have to wait for it.
+this puts the model, thinking level, and context usage just above the editor
+and puts the project folder, git branch, and git file changes below it.
 
-It starts shown. Use `/eleith compact-editor-chrome hide` to return to Pi's footer, `/eleith compact-editor-chrome show` to bring the rows back, or `toggle` to switch between them.
+## why
+
+less is more. i wanted to claw back as many lines as i could. i would have done
+more, but because i use an `nvim` extension, i couldn't embed the status into
+the prompt bar itself.
+
+## how to use
+
+look at it!
+
+use `/eleith compact-editor-chrome toggle` if you no longer want to look at it
