@@ -1,6 +1,7 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { completeEleith, registerEleithTabCompletion } from "./command-completion/index.ts";
 import compactEditorChrome from "./compact-editor-chrome/index.ts";
+import contextWindow from "./context/index.ts";
 import notifications from "./notifications/index.ts";
 import progress from "./progress/index.ts";
 import titleStatus from "./title-status/index.ts";
@@ -11,6 +12,7 @@ import { isToolChromeEnabled, setToolChromeEnabled, toggleToolChromeEnabled } fr
 export default function eleith(pi: ExtensionAPI): void {
 	registerEleithTabCompletion(pi);
 
+	const contextController = contextWindow(pi);
 	const promptStatus = compactEditorChrome(pi);
 	toolRendering(pi);
 	const desktopNotifications = notifications(pi);
@@ -29,6 +31,11 @@ export default function eleith(pi: ExtensionAPI): void {
 
 			if (!area || area === "help") {
 				showHelp(ctx);
+				return;
+			}
+
+			if (area === "context") {
+				await contextController.handle(explicitAction ?? "", ctx);
 				return;
 			}
 
@@ -111,6 +118,7 @@ function showHelp(ctx: ExtensionCommandContext): void {
 	ctx.ui.notify([
 		"Usage:",
 		"/eleith welcome [auto|large|small|tiny]  —  show a tree size",
+		"/eleith context [extend|restore]  —  show status or change the window",
 		"/eleith notifications on|off|test|toggle",
 		"/eleith progress on|off|test|toggle",
 		"/eleith compact-editor-chrome show|hide|toggle",

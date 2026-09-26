@@ -4,6 +4,7 @@ const COMMAND_PREFIX = "/eleith ";
 
 const areas = [
 	{ name: "welcome", description: "Render the startup card", actions: ["show", "auto", "large", "small", "tiny"] },
+	{ name: "context", description: "Context window", actions: ["extend", "restore"] },
 	{ name: "notifications", description: "Desktop notifications", actions: ["on", "off", "test", "toggle"] },
 	{ name: "progress", description: "Terminal progress indicator", actions: ["on", "off", "test", "toggle"] },
 	{ name: "compact-editor-chrome", description: "Editor prompt status", actions: ["show", "hide", "toggle"] },
@@ -41,7 +42,7 @@ export function registerEleithTabCompletion(pi: ExtensionAPI): void {
 		registered = true;
 		ctx.ui.addAutocompleteProvider((base) => ({
 			triggerCharacters: base.triggerCharacters,
-			getSuggestions(lines, cursorLine, cursorCol, options) {
+			async getSuggestions(lines, cursorLine, cursorCol, options) {
 				const beforeCursor = (lines[cursorLine] ?? "").slice(0, cursorCol);
 				if (cursorLine === 0 && beforeCursor.startsWith(COMMAND_PREFIX)) {
 					const prefix = beforeCursor.slice(COMMAND_PREFIX.length);
