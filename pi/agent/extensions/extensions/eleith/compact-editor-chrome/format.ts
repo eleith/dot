@@ -4,6 +4,7 @@ import { visibleWidth } from "@earendil-works/pi-tui";
 import type { GitStatus, ThemeLike } from "./types.ts";
 
 const ANSI_PATTERN = /\x1b\[[0-9;]*m/g;
+const TOKEN_FORMAT = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 0 });
 
 export function styleThinking(theme: ThemeLike, level: ExtensionContext["thinkingLevel"], text: string): string {
 	const color = level === "low" ? "success"
@@ -16,7 +17,9 @@ export function styleThinking(theme: ThemeLike, level: ExtensionContext["thinkin
 	return level === "off" || level === "minimal" || level === undefined ? styled : theme.bold(styled);
 }
 
-export function topRightStatus(ctx: ExtensionContext, theme: ThemeLike, separator: string, width = Infinity): string {
+type ModelStatusContext = Pick<ExtensionContext, "model" | "thinkingLevel" | "getContextUsage">;
+
+export function topRightStatus(ctx: ModelStatusContext, theme: ThemeLike, separator: string, width = Infinity): string {
 	const thinking = theme.fg("muted", "Thinking: ")
 		+ styleThinking(theme, ctx.thinkingLevel, thinkingLabel(ctx.thinkingLevel));
 	const context = contextLabel(ctx, theme);
@@ -54,13 +57,20 @@ export function extensionStatusLabel(statuses: ReadonlyMap<string, string> | und
 		.join(" › ");
 }
 
-export function contextLabel(ctx: ExtensionContext, theme: ThemeLike): string {
-	const percent = ctx.getContextUsage()?.percent;
-	const color = typeof percent !== "number" ? "muted"
+export function contextLabel(ctx: Pick<ModelStatusContext, "model" | "getContextUsage">, theme: ThemeLike): string {
+	const usage = ctx.getContextUsage();
+	const percent = usage?.percent;
+	const color = typeof percent !== "number" || !Number.isFinite(percent) ? "muted"
 		: percent >= 90 ? "error" : percent >= 75 ? "warning" : percent >= 50 ? "accent" : "muted";
-	const value = typeof percent === "number" ? `${Math.round(percent)}%` : "unknown";
+	const value = `${tokenLabel(usage?.tokens)}/${tokenLabel(usage?.contextWindow ?? ctx.model?.contextWindow)}`;
 	return theme.fg(color, "Context: ")
 		+ (color === "muted" ? theme.fg(color, value) : theme.bold(theme.fg(color, value)));
+}
+
+function tokenLabel(value: number | null | undefined): string {
+	return typeof value === "number" && Number.isFinite(value) && value >= 0
+		? TOKEN_FORMAT.format(value).toLowerCase()
+		: "unknown";
 }
 
 export function modelLabel(model: ExtensionContext["model"]): string {

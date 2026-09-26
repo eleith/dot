@@ -67,6 +67,7 @@ export class CompactEditorChromeController {
 		this.pi.on("thinking_level_select", (_event, ctx) => this.updateContext(ctx));
 		this.pi.on("agent_start", () => this.requestRender());
 		this.pi.on("agent_settled", () => this.requestRender());
+		this.pi.on("session_compact", () => this.requestRender());
 		this.pi.on("session_shutdown", () => this.resetSessionState());
 	}
 
