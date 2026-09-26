@@ -22,9 +22,3 @@ because extending π is at the ❤️ of how and why it was built
 copy this folder to your extensions folder, run `/reload` and then run `/eleith help` to learn more
 
 most extensions can be disabled (except for the welcome 🌳)
-
-`/eleith context` and `/context-window` show read-only window, compaction, and
-last-request cache status. only `extend` and `restore` change the window, for
-Codex GPT-6 Sol and Astra only. these are local windows, not verified server
-limits. compaction counts cover the current branch; cache reports describe the
-last request, not live cache residency. no context keyboard shortcuts.
