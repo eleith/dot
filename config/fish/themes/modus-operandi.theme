@@ -1,0 +1,110 @@
+# name: 'Modus Operandi'
+# preferred_background: ffffff
+
+[light]
+# preferred_background: ffffff
+fish_color_normal 000000
+fish_color_command 531ab6
+fish_color_keyword 531ab6
+fish_color_quote 3548cf
+fish_color_redirection 005e8b
+fish_color_end 721045
+fish_color_error a60000
+fish_color_param 2f3f83
+fish_color_comment 595959
+fish_color_selection --background=bdbdbd
+fish_color_search_match --background=fff576
+fish_color_operator 000000
+fish_color_escape 8f0075
+fish_color_autosuggestion 595959
+fish_color_cancel a60000 --reverse
+fish_color_option 005e8b
+fish_color_cwd 006800
+fish_color_host 721045
+fish_color_host_remote 884900
+fish_color_user 0031a9
+fish_pager_color_progress 595959
+fish_pager_color_background
+fish_pager_color_prefix 531ab6
+fish_pager_color_completion 000000
+fish_pager_color_description 595959
+fish_pager_color_selected_background --background=bdbdbd
+fish_pager_color_selected_prefix 531ab6
+fish_pager_color_selected_completion 000000
+fish_pager_color_selected_description 595959
+fish_pager_color_secondary_background
+fish_pager_color_secondary_prefix 531ab6
+fish_pager_color_secondary_completion 000000
+fish_pager_color_secondary_description 595959
+
+[dark]
+# preferred_background: ffffff
+fish_color_normal 000000
+fish_color_command 531ab6
+fish_color_keyword 531ab6
+fish_color_quote 3548cf
+fish_color_redirection 005e8b
+fish_color_end 721045
+fish_color_error a60000
+fish_color_param 2f3f83
+fish_color_comment 595959
+fish_color_selection --background=bdbdbd
+fish_color_search_match --background=fff576
+fish_color_operator 000000
+fish_color_escape 8f0075
+fish_color_autosuggestion 595959
+fish_color_cancel a60000 --reverse
+fish_color_option 005e8b
+fish_color_cwd 006800
+fish_color_host 721045
+fish_color_host_remote 884900
+fish_color_user 0031a9
+fish_pager_color_progress 595959
+fish_pager_color_background
+fish_pager_color_prefix 531ab6
+fish_pager_color_completion 000000
+fish_pager_color_description 595959
+fish_pager_color_selected_background --background=bdbdbd
+fish_pager_color_selected_prefix 531ab6
+fish_pager_color_selected_completion 000000
+fish_pager_color_selected_description 595959
+fish_pager_color_secondary_background
+fish_pager_color_secondary_prefix 531ab6
+fish_pager_color_secondary_completion 000000
+fish_pager_color_secondary_description 595959
+
+[unknown]
+# preferred_background: ffffff
+fish_color_normal 000000
+fish_color_command 531ab6
+fish_color_keyword 531ab6
+fish_color_quote 3548cf
+fish_color_redirection 005e8b
+fish_color_end 721045
+fish_color_error a60000
+fish_color_param 2f3f83
+fish_color_comment 595959
+fish_color_selection --background=bdbdbd
+fish_color_search_match --background=fff576
+fish_color_operator 000000
+fish_color_escape 8f0075
+fish_color_autosuggestion 595959
+fish_color_cancel a60000 --reverse
+fish_color_option 005e8b
+fish_color_cwd 006800
+fish_color_host 721045
+fish_color_host_remote 884900
+fish_color_user 0031a9
+fish_pager_color_progress 595959
+fish_pager_color_background
+fish_pager_color_prefix 531ab6
+fish_pager_color_completion 000000
+fish_pager_color_description 595959
+fish_pager_color_selected_background --background=bdbdbd
+fish_pager_color_selected_prefix 531ab6
+fish_pager_color_selected_completion 000000
+fish_pager_color_selected_description 595959
+fish_pager_color_secondary_background
+fish_pager_color_secondary_prefix 531ab6
+fish_pager_color_secondary_completion 000000
+fish_pager_color_secondary_description 595959
