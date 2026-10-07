@@ -84,6 +84,7 @@ return {
 				end,
 			},
 			{ "tailwindcss" },
+			{ "harper_ls" },
 			{ "intelephense" },
 			{ "docker_language_server" },
 			{ "jsonls" },

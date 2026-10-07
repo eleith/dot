@@ -17,6 +17,11 @@ return {
 				hl.NormalFloat = { fg = c.fg_main, bg = c.bg_main }
 				hl.FloatBorder = { fg = c.fg_dim, bg = c.bg_main }
 				hl.FloatTitle = { fg = c.fg_main, bg = c.bg_main }
+				hl.ScratchCommentHighlight = {
+					fg = c.fg_main,
+					bg = c.bg_yellow_intense,
+					bold = true,
+				}
 				hl.ScratchCommentSign = {
 					fg = c.fg_main,
 					bg = c.bg_yellow_intense,
