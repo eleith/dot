@@ -1,9 +1,9 @@
 {
-  "lastChangelogVersion": "0.87.1",
+  "lastChangelogVersion": "1.0.4",
   "theme": "modus-operandi-tinted/modus-vivendi-tinted",
   "quietStartup": true,
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-6-sol",
+  "defaultModel": "gpt-6.1-sol",
   "terminal": {
     "showTerminalProgress": false
   },
@@ -17,7 +17,14 @@
     "npm:pi-btw",
     "npm:pi-web-search",
     "npm:pi-smart-fetch",
-    "npm:pi-subagents-lite"
+    "npm:pi-subagents-lite",
+    "npm:@eleith-pi/title-status",
+    "npm:@eleith-pi/progress",
+    "npm:@eleith-pi/notifications",
+    "npm:@eleith-pi/context-window",
+    "npm:@eleith-pi/compact-editor-chrome",
+    "npm:@eleith-pi/welcome",
+    "npm:@eleith-pi/tool-rendering"
   ],
   "editorPaddingX": 1,
   "outputPad": 1,
