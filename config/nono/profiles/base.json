@@ -31,6 +31,8 @@
 			"~/.cache/mise",
 			"~/.local/bin",
 			"~/.local/share/mise",
+			"/usr/libexec/gcc/x86_64-linux-gnu/13",
+			"/usr/include",
 			"/run/nscd/socket"
 		],
 		"read_file": [
