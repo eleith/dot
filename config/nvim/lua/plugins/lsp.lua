@@ -160,6 +160,13 @@ return {
 			},
 			{ "cssls" },
 			{
+				"hledger-lsp",
+				cmd = { "hledger-lsp" },
+				filetypes = { "hledger", "journal" },
+				root_markers = { ".git" },
+				single_file_support = true,
+			},
+			{
 				"efm",
 				filetypes = {
 					"lua",
