@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.0.4",
+  "lastChangelogVersion": "1.3.0",
   "theme": "modus-operandi-tinted/modus-vivendi-tinted",
   "quietStartup": true,
   "defaultProvider": "openai-codex",
@@ -15,16 +15,16 @@
     },
     "npm:pi-vim",
     "npm:pi-btw",
-    "npm:pi-web-search",
-    "npm:pi-smart-fetch",
     "npm:pi-subagents-lite",
     "npm:@eleith-pi/title-status",
     "npm:@eleith-pi/progress",
     "npm:@eleith-pi/notifications",
-    "npm:@eleith-pi/context-window",
     "npm:@eleith-pi/compact-editor-chrome",
     "npm:@eleith-pi/welcome",
-    "npm:@eleith-pi/tool-rendering"
+    "npm:@eleith-pi/tool-rendering",
+    "npm:@eleith-pi/web-search-codex",
+    "npm:@eleith-pi/context-codex",
+    "npm:@eleith-pi/web-fetch"
   ],
   "editorPaddingX": 1,
   "outputPad": 1,
